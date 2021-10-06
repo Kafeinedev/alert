@@ -3,19 +3,24 @@ package com.safetynet.alert.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Person;
 
 @Repository
 public class PersonRepository {
 
-	// private static Logger log = LogManager.getLogger("PersonRepository");
+	private static Logger log = LogManager.getLogger("PersonRepository");
 
 	private DataCollectionJsonFileDAO dataCollectionDAO;
 
@@ -31,43 +36,48 @@ public class PersonRepository {
 				: new ArrayList<Person>();
 	}
 
-	public boolean add(Person person) {
+	public void add(Person person) throws FileAccessException, EntityAlreadyPresentException {
 		List<Person> persons = getAll();
+
 		if (findIndex(person, persons) != -1) {
-			return false;
+			log.error("Error trying to add already present person");
+			throw new EntityAlreadyPresentException();
 		}
+
 		persons.add(person);
 		DataCollection addedPerson = new DataCollection();
 		addedPerson.setPersons(persons);
-		return dataCollectionDAO.update(addedPerson);
+		dataCollectionDAO.update(addedPerson);
 	}
 
-	public boolean update(Person person) {
+	public void update(Person person) throws FileAccessException, EntityMissingException {
 		List<Person> persons = getAll();
-
 		int index = findIndex(person, persons);
-		if (index >= 0) {
-			persons.set(index, person);
 
-			DataCollection updatedPerson = new DataCollection();
-			updatedPerson.setPersons(persons);
-			return dataCollectionDAO.update(updatedPerson);
+		if (index < 0) {
+			log.error("Error trying to update missing person");
+			throw new EntityMissingException();
 		}
-		return false;
+
+		persons.set(index, person);
+		DataCollection updatedPerson = new DataCollection();
+		updatedPerson.setPersons(persons);
+		dataCollectionDAO.update(updatedPerson);
 	}
 
-	public boolean delete(Person person) {
+	public void delete(Person person) throws FileAccessException, EntityMissingException {
 		List<Person> persons = getAll();
-
 		int index = findIndex(person, persons);
-		if (index >= 0) {
-			persons.remove(index);
 
-			DataCollection deletedPerson = new DataCollection();
-			deletedPerson.setPersons(persons);
-			return dataCollectionDAO.update(deletedPerson);
+		if (index < 0) {
+			log.error("Error trying to delete missing person");
+			throw new EntityMissingException();
 		}
-		return false;
+
+		persons.remove(index);
+		DataCollection deletedPerson = new DataCollection();
+		deletedPerson.setPersons(persons);
+		dataCollectionDAO.update(deletedPerson);
 	}
 
 	public Person findByFirstNameAndLastName(String firstName, String lastName) {

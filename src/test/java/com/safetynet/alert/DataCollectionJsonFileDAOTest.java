@@ -1,6 +1,7 @@
 package com.safetynet.alert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
 import com.safetynet.alert.config.JsonDataConfig;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Firestation;
 
@@ -60,7 +62,7 @@ class DataCollectionJsonFileDAOTest {
 	}
 
 	@Test
-	public void getAll_whenAProblemOccurs_returnNull() {
+	public void getAll_whenAProblemOccurs_throwFileAccessException() {
 		when(mockDataConfig.getPath()).thenReturn("THIS_FILE_DOESNT_EXIST_AND_IF_IT_DOES_THERE_IS_A_PROBLEM");
 		try {
 			when(mockObjectMapper.readValue(new File("THIS_FILE_DOESNT_EXIST_AND_IF_IT_DOES_THERE_IS_A_PROBLEM"),
@@ -68,23 +70,13 @@ class DataCollectionJsonFileDAOTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		DataCollection toTest = dataCollectionDAO.getAll();
-
-		assertThat(toTest).isNull();
+		assertThrows(FileAccessException.class, () -> {
+			dataCollectionDAO.getAll();
+		});
 	}
 
 	@Test
-	public void update_whenWorkingProperly_returnTrue() {
-		when(mockDataConfig.getPath()).thenReturn("heh");
-
-		boolean toTest = dataCollectionDAO.update(dataCollection);
-
-		assertThat(toTest).isTrue();
-	}
-
-	@Test
-	public void update_whenAProblemOccurs_returnFalse() {
+	public void update_whenAProblemOccurs_throwsFileAccessException() {
 		when(mockDataConfig.getPath()).thenReturn("heh");
 
 		try {
@@ -93,9 +85,9 @@ class DataCollectionJsonFileDAOTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		assertThrows(FileAccessException.class, () -> {
+			dataCollectionDAO.update(dataCollection);
+		});
 
-		boolean toTest = dataCollectionDAO.update(dataCollection);
-
-		assertThat(toTest).isFalse();
 	}
 }

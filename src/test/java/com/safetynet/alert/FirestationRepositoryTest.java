@@ -1,7 +1,7 @@
 package com.safetynet.alert;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Firestation;
 import com.safetynet.alert.repository.FirestationRepository;
@@ -53,7 +55,7 @@ class FirestationRepositoryTest {
 	}
 
 	@Test
-	public void getAll_whenWorkingIncorrectlyOrEmpty_returnEmptyList() {
+	public void getAll_whenDatabaseEmpty_returnEmptyList() {
 		when(mockDataCollectionDAO.getAll()).thenReturn(null);
 
 		List<Firestation> toTest = firestationRepository.getAll();
@@ -62,90 +64,36 @@ class FirestationRepositoryTest {
 	}
 
 	@Test
-	public void add_whenWorkingCorrectly_returnTrue() {
-		Firestation fs = new Firestation("pin pon", "caymerkril");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = firestationRepository.add(fs);
-
-		assertThat(test).isEqualTo(true);
-	}
-
-	@Test
-	public void add_whenWorkingIncorrectly_returnFalse() {
-		Firestation fs = new Firestation("ça pik", "pas");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(false);
-
-		boolean test = firestationRepository.add(fs);
-
-		assertThat(test).isEqualTo(false);
-	}
-
-	@Test
-	public void add_whenAddingAMappingThatAlreadyExist_returnFalse() {
+	public void add_whenAddingAMappingThatAlreadyExist_throwEntityAlreadyPresentException() {
 		Firestation fs = new Firestation("this is an address", "2");
 
-		boolean test = firestationRepository.add(fs);
-
-		assertThat(test).isEqualTo(false);
+		assertThrows(EntityAlreadyPresentException.class, () -> {
+			firestationRepository.add(fs);
+		});
 	}
 
 	@Test
-	public void update_whenWorkingCorrectly_returnTrue() {
-		Firestation fs = new Firestation("this is an address", "5");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = firestationRepository.update(fs);
-
-		assertThat(test).isEqualTo(true);
-	}
-
-	@Test
-	public void update_whenWorkingIncorrectly_returnFalse() {
+	public void update_whenTryingToUpdateMissingMapping_throwEntityMissingException() {
 		Firestation fs = new Firestation("bderg", "drh");
-
-		boolean test = firestationRepository.update(fs);
-
-		assertThat(test).isEqualTo(false);
+		assertThrows(EntityMissingException.class, () -> {
+			firestationRepository.update(fs);
+		});
 	}
 
 	@Test
-	public void deleteAddressMapping_whenWorkingCorrectly_returnTrue() {
-		Firestation fs = new Firestation("this is an address", null);
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = firestationRepository.deleteAddressMapping(fs);
-
-		assertThat(test).isEqualTo(true);
+	public void deleteAddressMapping_whenTryingToDeleteMissingMapping_throwEntityMissingException() {
+		Firestation fs = new Firestation("bderg", "drh");
+		assertThrows(EntityMissingException.class, () -> {
+			firestationRepository.deleteAddressMapping(fs);
+		});
 	}
 
 	@Test
-	public void deleteAddressMapping_whenWorkingIncorrectly_returnFalse() {
-		Firestation fs = new Firestation("drgderg", null);
-
-		boolean test = firestationRepository.deleteAddressMapping(fs);
-
-		assertThat(test).isFalse();
-	}
-
-	@Test
-	public void deleteStationNumberMapping_whenWorkingCorrectly_returnTrue() {
-		Firestation fs = new Firestation(null, "2");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = firestationRepository.deleteStationNumberMapping(fs);
-
-		assertThat(test).isTrue();
-	}
-
-	@Test
-	public void deleteStationNumberMapping_whenWorkingIncorrectly_returnFalse() {
-		Firestation fs = new Firestation(null, "drgh");
-
-		boolean test = firestationRepository.deleteStationNumberMapping(fs);
-
-		assertThat(test).isFalse();
-
+	public void deleteStationNumberMapping_whenTryingToDeleteMissingMapping_throwEntityMissingException() {
+		Firestation fs = new Firestation("bderg", "drh");
+		assertThrows(EntityMissingException.class, () -> {
+			firestationRepository.deleteStationNumberMapping(fs);
+		});
 	}
 
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alert.config.JsonDataConfig;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
 
 @Repository
@@ -25,22 +26,22 @@ public class DataCollectionJsonFileDAO {
 		this.config = config;
 	}
 
-	private DataCollection readData() {
+	private DataCollection readData() throws FileAccessException {
 		DataCollection dataCollection = null;
 		try {
 			dataCollection = objectMapper.readValue(new File(config.getPath()), DataCollection.class);
 		} catch (Exception e) {
 			log.error("Error while reading json file", e);
+			throw new FileAccessException();
 		}
 		return dataCollection;
 	}
 
-	public DataCollection getAll() {
+	public DataCollection getAll() throws FileAccessException {
 		return readData();
 	}
 
-	public boolean update(DataCollection updatedDataCollection) {
-		boolean ret = true;
+	public void update(DataCollection updatedDataCollection) throws FileAccessException {
 		DataCollection dataCollection = readData();
 
 		if (dataCollection == null) {
@@ -58,9 +59,8 @@ public class DataCollectionJsonFileDAO {
 		try {
 			objectMapper.writeValue(new File(config.getPath()), dataCollection);
 		} catch (Exception e) {
-			ret = false;
 			log.error("Error while writing json file", e);
+			throw new FileAccessException();
 		}
-		return ret;
 	}
 }

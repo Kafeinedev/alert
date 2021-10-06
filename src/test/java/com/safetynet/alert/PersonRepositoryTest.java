@@ -1,6 +1,7 @@
 package com.safetynet.alert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -11,12 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.mockito.ArgumentMatchers.*;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Person;
 import com.safetynet.alert.repository.PersonRepository;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
 
 @ExtendWith(MockitoExtension.class)
 class PersonRepositoryTest {
@@ -53,7 +55,7 @@ class PersonRepositoryTest {
 	}
 
 	@Test
-	public void getAll_whenWorkingIncorrectlyOrEmpty_returnEmptyList() {
+	public void getAll_whenDatabaseEmpty_returnEmptyList() {
 		when(mockDataCollectionDAO.getAll()).thenReturn(null);
 
 		List<Person> toTest = personRepository.getAll();
@@ -62,71 +64,30 @@ class PersonRepositoryTest {
 	}
 
 	@Test
-	public void add_whenWorkingProperly_returnTrue() {
-		Person johnDoe = new Person("john", "doe", "this", "is", "a", "true", "test");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = personRepository.add(johnDoe);
-
-		assertThat(test).isEqualTo(true);
-	}
-
-	@Test
-	public void add_whenWorkingIncorrectly_returnFalse() {
-		Person johnDoe = new Person("john", "doe", "this", "is", "a", "true", "test");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(false);
-
-		boolean test = personRepository.add(johnDoe);
-
-		assertThat(test).isEqualTo(false);
-	}
-
-	@Test
-	public void add_whenTryingToAddPersonThatAlreadyExist_returnFalse() {
+	public void add_whenTryingToAddPersonThatAlreadyExist_throwEntityAlreadyPresentException() {
 		Person johnDoe = new Person("jessuis", "groot", "this", "is", "a", "test", "!");
 
-		boolean test = personRepository.add(johnDoe);
-
-		assertThat(test).isEqualTo(false);
+		assertThrows(EntityAlreadyPresentException.class, () -> {
+			personRepository.add(johnDoe);
+		});
 	}
 
 	@Test
-	public void update_whenWorkingProperly_returnTrue() {
-		Person johnDoe = new Person("jessuis", "groot", "dgs", "is", "a", "test", "!");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = personRepository.update(johnDoe);
-
-		assertThat(test).isEqualTo(true);
-
-	}
-
-	@Test
-	public void update_whenWorkingIncorrectly_returnFalse() {
+	public void update_whenTryingToUpdateMissingPerson_throwEntityMissingException() {
 		Person johnDoe = new Person("john", "doe", "this", "is", "a", "true", "test");
 
-		boolean test = personRepository.update(johnDoe);
-
-		assertThat(test).isEqualTo(false);
+		assertThrows(EntityMissingException.class, () -> {
+			personRepository.update(johnDoe);
+		});
 	}
 
 	@Test
-	public void delete_whenWorkingProperly_returnTrue() {
-		Person johnDoe = new Person("jessuis", "groot", "this", "is", "a", "test", "!");
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = personRepository.delete(johnDoe);
-
-		assertThat(test).isEqualTo(true);
-	}
-
-	@Test
-	public void delete_whenWorkingIncorrectly_returnFalse() {
+	public void delete_whenTryingToDeleteMissingPerson_throwEntityMissingException() {
 		Person johnDoe = new Person("john", "doe", "this", "is", "a", "true", "test");
 
-		boolean test = personRepository.delete(johnDoe);
-
-		assertThat(test).isEqualTo(false);
+		assertThrows(EntityMissingException.class, () -> {
+			personRepository.delete(johnDoe);
+		});
 	}
 
 	@Test

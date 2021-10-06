@@ -3,15 +3,22 @@ package com.safetynet.alert.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Firestation;
 
 @Repository
 public class FirestationRepository {
+
+	private static Logger log = LogManager.getLogger("FirestationRepository logger");
 
 	private DataCollectionJsonFileDAO dataCollectionDAO;
 
@@ -20,66 +27,73 @@ public class FirestationRepository {
 		this.dataCollectionDAO = dataCollectionDAO;
 	}
 
-	public List<Firestation> getAll() {
+	public List<Firestation> getAll() throws FileAccessException {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
 		return dataCollection != null && dataCollection.getFirestations() != null ? dataCollection.getFirestations()
 				: new ArrayList<Firestation>();
 	}
 
-	public boolean add(Firestation firestation) {
+	public void add(Firestation firestation) throws FileAccessException, EntityAlreadyPresentException {
 		List<Firestation> firestations = getAll();
 		int index = findIndexByAddress(firestation, firestations);
+
 		if (index != -1 && firestations.get(index).getStation().equals(firestation.getStation())) {
-			return false;
+			log.error("Error trying to add a mapping already present");
+			throw new EntityAlreadyPresentException();
 		}
+
 		firestations.add(firestation);
 		DataCollection addedFirestation = new DataCollection();
 		addedFirestation.setFirestations(firestations);
-		return dataCollectionDAO.update(addedFirestation);
+		dataCollectionDAO.update(addedFirestation);
 	}
 
-	public boolean update(Firestation firestation) {
+	public void update(Firestation firestation) throws FileAccessException, EntityMissingException {
 		List<Firestation> firestations = getAll();
-
 		int index = findIndexByAddress(firestation, firestations);
-		if (index >= 0) {
-			firestations.set(index, firestation);
 
-			DataCollection updatedFirestation = new DataCollection();
-			updatedFirestation.setFirestations(firestations);
-			return dataCollectionDAO.update(updatedFirestation);
+		if (index < 0) {
+			log.error("Error trying to update a non existant mapping");
+			throw new EntityMissingException();
 		}
-		return false;
+
+		firestations.set(index, firestation);
+		DataCollection updatedFirestation = new DataCollection();
+		updatedFirestation.setFirestations(firestations);
+		dataCollectionDAO.update(updatedFirestation);
 	}
 
-	public boolean deleteAddressMapping(Firestation firestation) {
+	public void deleteAddressMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
 		List<Firestation> firestations = getAll();
-
 		int index = findIndexByAddress(firestation, firestations);
-		if (index >= 0) {
-			firestations.remove(index);
 
-			DataCollection deletedAddress = new DataCollection();
-			deletedAddress.setFirestations(firestations);
-			return dataCollectionDAO.update(deletedAddress);
+		if (index < 0) {
+			log.error("Error trying to delete a non existent address mapping");
+			throw new EntityMissingException();
 		}
-		return false;
+
+		firestations.remove(index);
+		DataCollection deletedAddress = new DataCollection();
+		deletedAddress.setFirestations(firestations);
+		dataCollectionDAO.update(deletedAddress);
 	}
 
-	public boolean deleteStationNumberMapping(Firestation firestation) {
+	public void deleteStationNumberMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
 		List<Firestation> firestations = getAll();
-
 		List<Integer> indexes = findIndexesByStationNumber(firestation, firestations);
+
+		if (indexes.size() < 1) {
+			log.error("Error trying to delete non existent station number mapping");
+			throw new EntityMissingException();
+		}
+
 		for (int index : indexes) {
 			firestations.remove(index);
 		}
-		if (indexes.size() > 0) {
-			DataCollection deletedAddress = new DataCollection();
-			deletedAddress.setFirestations(firestations);
-			return dataCollectionDAO.update(deletedAddress);
-		}
-		return false;
+		DataCollection deletedAddress = new DataCollection();
+		deletedAddress.setFirestations(firestations);
+		dataCollectionDAO.update(deletedAddress);
 	}
 
 	private int findIndexByAddress(Firestation firestation, List<Firestation> firestations) {

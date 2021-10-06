@@ -1,7 +1,7 @@
 package com.safetynet.alert;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.repository.MedicalRecordRepository;
@@ -51,7 +53,7 @@ public class MedicalRecordRepositoryTest {
 	}
 
 	@Test
-	public void getAll_whenWorkingIncorrectly_returnEmptyList() {
+	public void getAll_whenDatabaseEmpty_returnEmptyList() {
 		when(mockDataCollectionDAO.getAll()).thenReturn(null);
 
 		List<MedicalRecord> toTest = medicalRecordRepository.getAll();
@@ -60,73 +62,30 @@ public class MedicalRecordRepositoryTest {
 	}
 
 	@Test
-	public void add_whenWorkingCorrectly_returnTrue() {
-		MedicalRecord mr = new MedicalRecord("a", "b", "c", List.of(), List.of());
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = medicalRecordRepository.add(mr);
-
-		assertThat(test).isTrue();
-	}
-
-	@Test
-	public void add_whenWorkingIncorrectly_returnFalse() {
-		MedicalRecord mr = new MedicalRecord("a", "b", "c", List.of(), List.of());
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(false);
-
-		boolean test = medicalRecordRepository.add(mr);
-
-		assertThat(test).isFalse();
-	}
-
-	@Test
-	public void add_whenMedicalRecordAlreadyExist_returnFalse() {
+	public void add_whenMedicalRecordAlreadyPresent_throwEntityAlreadyPresentException() {
 		MedicalRecord mr = new MedicalRecord("bonjour", "jemappelle", "datedenaissance", List.of("bla", "boa"),
 				List.of("hihihi"));
 
-		boolean test = medicalRecordRepository.add(mr);
-
-		assertThat(test).isFalse();
+		assertThrows(EntityAlreadyPresentException.class, () -> {
+			medicalRecordRepository.add(mr);
+		});
 	}
 
 	@Test
-	public void update_whenWorkingProperly_returnTrue() {
-		MedicalRecord mr = new MedicalRecord("bonjour", "jemappelle", "upgrade", List.of("bla", "boa"),
-				List.of("hihihi"));
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
+	public void update_whenMedicalRecordMissing_throwEntityMissingException() {
+		MedicalRecord mr = new MedicalRecord("drgdgh", "jemappelle", "salut", List.of("bla", "boa"), List.of("hihihi"));
 
-		boolean test = medicalRecordRepository.update(mr);
-
-		assertThat(test).isTrue();
+		assertThrows(EntityMissingException.class, () -> {
+			medicalRecordRepository.update(mr);
+		});
 	}
 
 	@Test
-	public void update_whenWorkingIncorrectly_returnFalse() {
-		MedicalRecord mr = new MedicalRecord("non", "jemappelle", "datedenaissance", List.of("bla", "boa"),
-				List.of("hihihi"));
+	public void delete_whenMedicalRecordMissing_throwEntityMissingException() {
+		MedicalRecord mr = new MedicalRecord("drgdgh", "jemappelle", "salut", List.of("bla", "boa"), List.of("hihihi"));
 
-		boolean test = medicalRecordRepository.update(mr);
-
-		assertThat(test).isFalse();
-	}
-
-	@Test
-	public void delete_whenWorkingProperly_returnTrue() {
-		MedicalRecord mr = new MedicalRecord("bonjour", "jemappelle", "upgrade", List.of("bla", "boa"),
-				List.of("hihihi"));
-		when(mockDataCollectionDAO.update(any(DataCollection.class))).thenReturn(true);
-
-		boolean test = medicalRecordRepository.delete(mr);
-
-		assertThat(test).isTrue();
-	}
-
-	@Test
-	public void delete_whenWorkingIncorrectly_returnFalse() {
-		MedicalRecord mr = new MedicalRecord("bonjour", "Ouin", "upgrade", List.of("bla", "boa"), List.of("hihihi"));
-
-		boolean test = medicalRecordRepository.delete(mr);
-
-		assertThat(test).isFalse();
+		assertThrows(EntityMissingException.class, () -> {
+			medicalRecordRepository.delete(mr);
+		});
 	}
 }
