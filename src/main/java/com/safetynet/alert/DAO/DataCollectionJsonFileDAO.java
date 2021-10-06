@@ -16,23 +16,44 @@ public class DataCollectionJsonFileDAO {
 
 	private static Logger log = LogManager.getLogger("DataCollectionDAO logger");
 
-	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
 	private JsonDataConfig config;
+	private DataCollection dataCollection;
 
-	public DataCollection getAll() {
-		DataCollection ret = null;
+	@Autowired
+	public DataCollectionJsonFileDAO(ObjectMapper objectMapper, JsonDataConfig config) {
+		this.objectMapper = objectMapper;
+		this.config = config;
+	}
+
+	private void readData() {
 		try {
-			ret = objectMapper.readValue(new File(config.getPath()), DataCollection.class);
+			dataCollection = objectMapper.readValue(new File(config.getPath()), DataCollection.class);
 		} catch (Exception e) {
 			log.error("Error while reading json file", e);
 		}
-		return ret;
 	}
 
-	public boolean update(DataCollection dataCollection) {
+	public DataCollection getAll() {
+		readData();
+		return dataCollection;
+	}
+
+	public boolean update(DataCollection updatedDataCollection) {
 		boolean ret = true;
+		readData();
+		if (dataCollection == null) {
+			dataCollection = new DataCollection();
+		}
+		if (updatedDataCollection.getPersons() != null) {
+			dataCollection.setPersons(updatedDataCollection.getPersons());
+		}
+		if (updatedDataCollection.getFirestations() != null) {
+			dataCollection.setFirestations(updatedDataCollection.getFirestations());
+		}
+		if (updatedDataCollection.getMedicalrecords() != null) {
+			dataCollection.setMedicalrecords(updatedDataCollection.getMedicalrecords());
+		}
 		try {
 			objectMapper.writeValue(new File(config.getPath()), dataCollection);
 		} catch (Exception e) {

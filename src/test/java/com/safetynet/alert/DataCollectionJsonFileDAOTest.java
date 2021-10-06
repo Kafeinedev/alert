@@ -8,14 +8,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
@@ -23,7 +21,6 @@ import com.safetynet.alert.config.JsonDataConfig;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Firestation;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class DataCollectionJsonFileDAOTest {
 
@@ -32,13 +29,13 @@ class DataCollectionJsonFileDAOTest {
 	@Mock
 	private JsonDataConfig mockDataConfig;
 
-	@InjectMocks
 	private DataCollectionJsonFileDAO dataCollectionDAO;
 
 	private static DataCollection dataCollection;
 
-	@BeforeAll
-	static private void setUp() {
+	@BeforeEach
+	private void setUp() {
+		dataCollectionDAO = new DataCollectionJsonFileDAO(mockObjectMapper, mockDataConfig);
 		List<Firestation> firestations = new ArrayList<Firestation>();
 		firestations.add(new Firestation("abc", "def"));
 		dataCollection = new DataCollection();
@@ -101,5 +98,4 @@ class DataCollectionJsonFileDAOTest {
 
 		assertThat(toTest).isFalse();
 	}
-
 }
