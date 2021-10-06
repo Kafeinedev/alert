@@ -23,7 +23,8 @@ public class FirestationRepository {
 	public List<Firestation> getAll() {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
-		return dataCollection != null ? dataCollection.getFirestations() : new ArrayList<Firestation>();
+		return dataCollection != null && dataCollection.getFirestations() != null ? dataCollection.getFirestations()
+				: new ArrayList<Firestation>();
 	}
 
 	public boolean add(Firestation firestation) {

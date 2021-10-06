@@ -23,7 +23,8 @@ public class MedicalRecordRepository {
 	public List<MedicalRecord> getAll() {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
-		return dataCollection != null ? dataCollection.getMedicalrecords() : new ArrayList<MedicalRecord>();
+		return dataCollection != null && dataCollection.getMedicalrecords() != null ? dataCollection.getMedicalrecords()
+				: new ArrayList<MedicalRecord>();
 	}
 
 	public boolean add(MedicalRecord medicalRecord) {

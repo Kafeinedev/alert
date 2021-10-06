@@ -27,7 +27,8 @@ public class PersonRepository {
 	public List<Person> getAll() {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
-		return dataCollection != null ? dataCollection.getPersons() : new ArrayList<Person>();
+		return dataCollection != null && dataCollection.getPersons() != null ? dataCollection.getPersons()
+				: new ArrayList<Person>();
 	}
 
 	public boolean add(Person person) {

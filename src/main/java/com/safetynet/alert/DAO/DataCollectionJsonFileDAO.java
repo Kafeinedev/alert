@@ -18,7 +18,6 @@ public class DataCollectionJsonFileDAO {
 
 	private ObjectMapper objectMapper;
 	private JsonDataConfig config;
-	private DataCollection dataCollection;
 
 	@Autowired
 	public DataCollectionJsonFileDAO(ObjectMapper objectMapper, JsonDataConfig config) {
@@ -26,22 +25,24 @@ public class DataCollectionJsonFileDAO {
 		this.config = config;
 	}
 
-	private void readData() {
+	private DataCollection readData() {
+		DataCollection dataCollection = null;
 		try {
 			dataCollection = objectMapper.readValue(new File(config.getPath()), DataCollection.class);
 		} catch (Exception e) {
 			log.error("Error while reading json file", e);
 		}
+		return dataCollection;
 	}
 
 	public DataCollection getAll() {
-		readData();
-		return dataCollection;
+		return readData();
 	}
 
 	public boolean update(DataCollection updatedDataCollection) {
 		boolean ret = true;
-		readData();
+		DataCollection dataCollection = readData();
+
 		if (dataCollection == null) {
 			dataCollection = new DataCollection();
 		}
