@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,9 @@ import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
 import com.safetynet.alert.config.JsonDataConfig;
@@ -45,14 +49,12 @@ class DataCollectionJsonFileDAOTest {
 	}
 
 	@Test
-	public void getAll_whenWorkingProperly_returnCorrectDataCollectionObject() {
+	public void getAll_whenWorkingProperly_returnCorrectDataCollectionObject()
+			throws JsonParseException, JsonMappingException, IOException {
 		when(mockDataConfig.getPath()).thenReturn("nothing_to_see_here_move_along");
-		try {
-			when(mockObjectMapper.readValue(new File("nothing_to_see_here_move_along"), DataCollection.class))
-					.thenReturn(dataCollection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+		when(mockObjectMapper.readValue(new File("nothing_to_see_here_move_along"), DataCollection.class))
+				.thenReturn(dataCollection);
 
 		DataCollection toTest = dataCollectionDAO.getAll();
 		assertThat(toTest.getFirestations().get(0).getAddress())
@@ -62,29 +64,26 @@ class DataCollectionJsonFileDAOTest {
 	}
 
 	@Test
-	public void getAll_whenAProblemOccurs_throwFileAccessException() {
+	public void getAll_whenAProblemOccurs_throwFileAccessException()
+			throws JsonParseException, JsonMappingException, IOException {
 		when(mockDataConfig.getPath()).thenReturn("THIS_FILE_DOESNT_EXIST_AND_IF_IT_DOES_THERE_IS_A_PROBLEM");
-		try {
-			when(mockObjectMapper.readValue(new File("THIS_FILE_DOESNT_EXIST_AND_IF_IT_DOES_THERE_IS_A_PROBLEM"),
-					DataCollection.class)).thenThrow(new MockitoException("Unit test exception"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+		when(mockObjectMapper.readValue(new File("THIS_FILE_DOESNT_EXIST_AND_IF_IT_DOES_THERE_IS_A_PROBLEM"),
+				DataCollection.class)).thenThrow(new MockitoException("Unit test exception"));
+
 		assertThrows(FileAccessException.class, () -> {
 			dataCollectionDAO.getAll();
 		});
 	}
 
 	@Test
-	public void update_whenAProblemOccurs_throwsFileAccessException() {
+	public void update_whenAProblemOccurs_throwsFileAccessException()
+			throws JsonGenerationException, JsonMappingException, IOException {
 		when(mockDataConfig.getPath()).thenReturn("heh");
 
-		try {
-			doThrow(new MockitoException("Unit test exception")).when(mockObjectMapper).writeValue(new File("heh"),
-					dataCollection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		doThrow(new MockitoException("Unit test exception")).when(mockObjectMapper).writeValue(new File("heh"),
+				dataCollection);
+
 		assertThrows(FileAccessException.class, () -> {
 			dataCollectionDAO.update(dataCollection);
 		});

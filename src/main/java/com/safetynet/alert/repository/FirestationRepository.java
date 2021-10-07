@@ -98,7 +98,7 @@ public class FirestationRepository {
 
 	private int findIndexByAddress(Firestation firestation, List<Firestation> firestations) {
 		for (int i = 0; i < firestations.size(); i++) {
-			if (firestation.getAddress().equalsIgnoreCase(firestations.get(i).getAddress())) {
+			if (firestation.getAddress().equals(firestations.get(i).getAddress())) {
 				return i;
 			}
 		}
