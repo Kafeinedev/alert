@@ -75,17 +75,21 @@ public class FirestationRepository {
 
 	public void deleteStationNumberMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
 		List<Firestation> firestations = getAll();
-		List<Integer> indexes = findIndexesByStationNumber(firestation, firestations);
+		boolean missing = true;
+		int i = 0;
 
-		if (indexes.size() < 1) {
-			log.error("Error trying to delete non existent station number mapping");
+		while (i < firestations.size()) {
+			if (firestation.getStation().equals(firestations.get(i).getStation())) {
+				firestations.remove(i);
+				missing = false;
+			} else {
+				++i;
+			}
+		}
+
+		if (missing) {
 			throw new EntityMissingException();
 		}
-
-		for (int index : indexes) {
-			firestations.remove(index);
-		}
-
 		dataCollectionDAO.updateFirestation(firestations);
 	}
 
@@ -96,17 +100,5 @@ public class FirestationRepository {
 			}
 		}
 		return -1;
-	}
-
-	private List<Integer> findIndexesByStationNumber(Firestation firestation, List<Firestation> firestations) {
-		List<Integer> ret = new ArrayList<Integer>();
-
-		for (int i = 0; i < firestations.size(); i++) {
-			if (firestation.getStation().equals(firestations.get(i).getStation())) {
-				ret.add(i);
-			}
-		}
-
-		return ret;
 	}
 }
