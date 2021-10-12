@@ -30,7 +30,7 @@ public class MedicalRecordRepository {
 	public List<MedicalRecord> getAll() {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
-		return dataCollection != null && dataCollection.getMedicalrecords() != null ? dataCollection.getMedicalrecords()
+		return dataCollection.getMedicalrecords() != null ? dataCollection.getMedicalrecords()
 				: new ArrayList<MedicalRecord>();
 	}
 
@@ -43,9 +43,7 @@ public class MedicalRecordRepository {
 		}
 
 		medicalRecords.add(medicalRecord);
-		DataCollection dataCollection = new DataCollection();
-		dataCollection.setMedicalrecords(medicalRecords);
-		dataCollectionDAO.update(dataCollection);
+		dataCollectionDAO.updateMedicalRecord(medicalRecords);
 	}
 
 	public void update(MedicalRecord medicalRecord) throws FileAccessException, EntityMissingException {
@@ -58,9 +56,7 @@ public class MedicalRecordRepository {
 		}
 
 		medicalRecords.set(index, medicalRecord);
-		DataCollection dataCollection = new DataCollection();
-		dataCollection.setMedicalrecords(medicalRecords);
-		dataCollectionDAO.update(dataCollection);
+		dataCollectionDAO.updateMedicalRecord(medicalRecords);
 	}
 
 	public void delete(MedicalRecord medicalRecord) throws FileAccessException, EntityMissingException {
@@ -73,9 +69,7 @@ public class MedicalRecordRepository {
 		}
 
 		medicalRecords.remove(index);
-		DataCollection dataCollection = new DataCollection();
-		dataCollection.setMedicalrecords(medicalRecords);
-		dataCollectionDAO.update(dataCollection);
+		dataCollectionDAO.updateMedicalRecord(medicalRecords);
 	}
 
 	private int findIndex(MedicalRecord medicalRecord, List<MedicalRecord> medicalRecords) {

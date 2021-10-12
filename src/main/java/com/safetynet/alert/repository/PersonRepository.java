@@ -32,8 +32,7 @@ public class PersonRepository {
 	public List<Person> getAll() {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
-		return dataCollection != null && dataCollection.getPersons() != null ? dataCollection.getPersons()
-				: new ArrayList<Person>();
+		return dataCollection.getPersons() != null ? dataCollection.getPersons() : new ArrayList<Person>();
 	}
 
 	public void add(Person person) throws FileAccessException, EntityAlreadyPresentException {
@@ -45,9 +44,7 @@ public class PersonRepository {
 		}
 
 		persons.add(person);
-		DataCollection addedPerson = new DataCollection();
-		addedPerson.setPersons(persons);
-		dataCollectionDAO.update(addedPerson);
+		dataCollectionDAO.updatePerson(persons);
 	}
 
 	public void update(Person person) throws FileAccessException, EntityMissingException {
@@ -60,9 +57,7 @@ public class PersonRepository {
 		}
 
 		persons.set(index, person);
-		DataCollection updatedPerson = new DataCollection();
-		updatedPerson.setPersons(persons);
-		dataCollectionDAO.update(updatedPerson);
+		dataCollectionDAO.updatePerson(persons);
 	}
 
 	public void delete(Person person) throws FileAccessException, EntityMissingException {
@@ -75,9 +70,7 @@ public class PersonRepository {
 		}
 
 		persons.remove(index);
-		DataCollection deletedPerson = new DataCollection();
-		deletedPerson.setPersons(persons);
-		dataCollectionDAO.update(deletedPerson);
+		dataCollectionDAO.updatePerson(persons);
 	}
 
 	public Person findByFirstNameAndLastName(String firstName, String lastName) {

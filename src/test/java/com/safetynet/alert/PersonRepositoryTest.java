@@ -56,7 +56,7 @@ class PersonRepositoryTest {
 
 	@Test
 	public void getAll_whenDatabaseEmpty_returnEmptyList() {
-		when(mockDataCollectionDAO.getAll()).thenReturn(null);
+		when(mockDataCollectionDAO.getAll()).thenReturn(new DataCollection());
 
 		List<Person> toTest = personRepository.getAll();
 

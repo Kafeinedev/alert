@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,8 @@ import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
 import com.safetynet.alert.config.JsonDataConfig;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
+import com.safetynet.alert.model.Person;
+import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.model.Firestation;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,16 +80,42 @@ class DataCollectionJsonFileDAOTest {
 	}
 
 	@Test
-	public void update_whenAProblemOccurs_throwsFileAccessException()
+	public void updatePerson_whenAProblemOccurs_throwsFileAccessException()
 			throws JsonGenerationException, JsonMappingException, IOException {
 		when(mockDataConfig.getPath()).thenReturn("heh");
 
-		doThrow(new MockitoException("Unit test exception")).when(mockObjectMapper).writeValue(new File("heh"),
-				dataCollection);
+		doThrow(new MockitoException("Unit test exception")).when(mockObjectMapper).writeValue(any(File.class),
+				any(DataCollection.class));
 
 		assertThrows(FileAccessException.class, () -> {
-			dataCollectionDAO.update(dataCollection);
+			dataCollectionDAO.updatePerson(new ArrayList<Person>());
+		});
+	}
+
+	@Test
+	public void updateFirestation_whenAProblemOccurs_throwsFileAccessException()
+			throws JsonGenerationException, JsonMappingException, IOException {
+		when(mockDataConfig.getPath()).thenReturn("heh");
+
+		doThrow(new MockitoException("Unit test exception")).when(mockObjectMapper).writeValue(any(File.class),
+				any(DataCollection.class));
+
+		assertThrows(FileAccessException.class, () -> {
+			dataCollectionDAO.updateFirestation(new ArrayList<Firestation>());
 		});
 
+	}
+
+	@Test
+	public void updateMedicalRecord_whenAProblemOccurs_throwsFileAccessException()
+			throws JsonGenerationException, JsonMappingException, IOException {
+		when(mockDataConfig.getPath()).thenReturn("heh");
+
+		doThrow(new MockitoException("Unit test exception")).when(mockObjectMapper).writeValue(any(File.class),
+				any(DataCollection.class));
+
+		assertThrows(FileAccessException.class, () -> {
+			dataCollectionDAO.updateMedicalRecord(new ArrayList<MedicalRecord>());
+		});
 	}
 }

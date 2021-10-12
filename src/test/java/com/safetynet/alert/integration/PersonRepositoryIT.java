@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
-import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Person;
 import com.safetynet.alert.repository.PersonRepository;
 
@@ -25,9 +24,7 @@ class PersonRepositoryIT {
 
 	@BeforeEach
 	private void setUpPerTest() {
-		DataCollection dc = new DataCollection();
-		dc.setPersons(new ArrayList<Person>());
-		dataCollectionDAO.update(dc);
+		dataCollectionDAO.updatePerson(new ArrayList<Person>());
 	}
 
 	@Test

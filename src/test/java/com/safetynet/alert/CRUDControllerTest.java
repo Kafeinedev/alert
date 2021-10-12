@@ -26,7 +26,9 @@ import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.Firestation;
 import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.model.Person;
-import com.safetynet.alert.service.CRUDService;
+import com.safetynet.alert.service.CRUDFirestationService;
+import com.safetynet.alert.service.CRUDMedicalRecordService;
+import com.safetynet.alert.service.CRUDPersonService;
 
 @WebMvcTest(controllers = CRUDController.class)
 class CRUDControllerTest {
@@ -35,7 +37,13 @@ class CRUDControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private CRUDService service;
+	private CRUDPersonService personService;
+
+	@MockBean
+	private CRUDFirestationService firestationService;
+
+	@MockBean
+	private CRUDMedicalRecordService medicalrecordService;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -52,7 +60,7 @@ class CRUDControllerTest {
 	@Test
 	public void postPerson_whenPersonAlreadyPresent_send4xx() throws JsonProcessingException, Exception {
 		Person person = new Person("non", "nonnon", "ce n'est pas", "une chanson", "monotone", "nonnon", "nonnon");
-		doThrow(new EntityAlreadyPresentException()).when(service).postPerson(any(Person.class));
+		doThrow(new EntityAlreadyPresentException()).when(personService).postPerson(any(Person.class));
 
 		mockMvc.perform(
 				post("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON))
@@ -62,7 +70,7 @@ class CRUDControllerTest {
 	@Test
 	public void postPerson_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Person person = new Person("non", "nonnon", "ce n'est pas", "une chanson", "monotone", "nonnon", "nonnon");
-		doThrow(new FileAccessException()).when(service).postPerson(any(Person.class));
+		doThrow(new FileAccessException()).when(personService).postPerson(any(Person.class));
 
 		mockMvc.perform(
 				post("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON))
@@ -80,7 +88,8 @@ class CRUDControllerTest {
 	@Test
 	public void postFirestationMapping_whenMappingAlreadyExist_send4xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new EntityAlreadyPresentException()).when(service).postFirestationMapping(any(Firestation.class));
+		doThrow(new EntityAlreadyPresentException()).when(firestationService)
+				.postFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(post("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError());
@@ -89,7 +98,7 @@ class CRUDControllerTest {
 	@Test
 	public void postFirestationMapping_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new FileAccessException()).when(service).postFirestationMapping(any(Firestation.class));
+		doThrow(new FileAccessException()).when(firestationService).postFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(post("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
@@ -107,7 +116,8 @@ class CRUDControllerTest {
 	@Test
 	public void postMedicalRecord_whenMedicalRecordAlreadyExist_send4xx() throws JsonProcessingException, Exception {
 		MedicalRecord mr = new MedicalRecord("john", "doe", "01-01-1900", List.of("test", "test"), List.of("test"));
-		doThrow(new EntityAlreadyPresentException()).when(service).postMedicalRecord(any(MedicalRecord.class));
+		doThrow(new EntityAlreadyPresentException()).when(medicalrecordService)
+				.postMedicalRecord(any(MedicalRecord.class));
 
 		mockMvc.perform(
 				post("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON))
@@ -117,7 +127,7 @@ class CRUDControllerTest {
 	@Test
 	public void postMedicalRecord_whenDataBaseAccessError_send_5xx() throws JsonProcessingException, Exception {
 		MedicalRecord mr = new MedicalRecord("john", "doe", "01-01-1900", List.of("test", "test"), List.of("test"));
-		doThrow(new FileAccessException()).when(service).postMedicalRecord(any(MedicalRecord.class));
+		doThrow(new FileAccessException()).when(medicalrecordService).postMedicalRecord(any(MedicalRecord.class));
 
 		mockMvc.perform(
 				post("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON))
@@ -136,7 +146,7 @@ class CRUDControllerTest {
 	@Test
 	public void putPerson_whenPersonDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		Person person = new Person("non", "nonnon", "ce n'est pas", "une chanson", "monotone", "nonnon", "nonnon");
-		doThrow(new EntityMissingException()).when(service).putPerson(any(Person.class));
+		doThrow(new EntityMissingException()).when(personService).putPerson(any(Person.class));
 
 		mockMvc.perform(
 				put("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON))
@@ -146,7 +156,7 @@ class CRUDControllerTest {
 	@Test
 	public void putPerson_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Person person = new Person("non", "nonnon", "ce n'est pas", "une chanson", "monotone", "nonnon", "nonnon");
-		doThrow(new FileAccessException()).when(service).putPerson(any(Person.class));
+		doThrow(new FileAccessException()).when(personService).putPerson(any(Person.class));
 
 		mockMvc.perform(
 				put("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON))
@@ -164,7 +174,7 @@ class CRUDControllerTest {
 	@Test
 	public void putFirestationMapping_whenMappingDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new EntityMissingException()).when(service).putFirestationMapping(any(Firestation.class));
+		doThrow(new EntityMissingException()).when(firestationService).putFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(put("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError());
@@ -173,7 +183,7 @@ class CRUDControllerTest {
 	@Test
 	public void putFirestationMapping_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new FileAccessException()).when(service).putFirestationMapping(any(Firestation.class));
+		doThrow(new FileAccessException()).when(firestationService).putFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(put("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
@@ -191,7 +201,7 @@ class CRUDControllerTest {
 	@Test
 	public void putMedicalRecord_whenMedicalRecordDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		MedicalRecord mr = new MedicalRecord("john", "doe", "01-01-1900", List.of("test", "test"), List.of("test"));
-		doThrow(new EntityMissingException()).when(service).putMedicalRecord(any(MedicalRecord.class));
+		doThrow(new EntityMissingException()).when(medicalrecordService).putMedicalRecord(any(MedicalRecord.class));
 
 		mockMvc.perform(
 				put("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON))
@@ -201,7 +211,7 @@ class CRUDControllerTest {
 	@Test
 	public void putMedicalRecord_whenDataBaseAccessError_send_5xx() throws JsonProcessingException, Exception {
 		MedicalRecord mr = new MedicalRecord("john", "doe", "01-01-1900", List.of("test", "test"), List.of("test"));
-		doThrow(new FileAccessException()).when(service).putMedicalRecord(any(MedicalRecord.class));
+		doThrow(new FileAccessException()).when(medicalrecordService).putMedicalRecord(any(MedicalRecord.class));
 
 		mockMvc.perform(
 				put("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON))
@@ -220,7 +230,7 @@ class CRUDControllerTest {
 	@Test
 	public void deletePerson_whenPersonDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		Person person = new Person("non", "nonnon", "ce n'est pas", "une chanson", "monotone", "nonnon", "nonnon");
-		doThrow(new EntityMissingException()).when(service).deletePerson(any(Person.class));
+		doThrow(new EntityMissingException()).when(personService).deletePerson(any(Person.class));
 
 		mockMvc.perform(
 				delete("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON))
@@ -230,7 +240,7 @@ class CRUDControllerTest {
 	@Test
 	public void deletePerson_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Person person = new Person("non", "nonnon", "ce n'est pas", "une chanson", "monotone", "nonnon", "nonnon");
-		doThrow(new FileAccessException()).when(service).deletePerson(any(Person.class));
+		doThrow(new FileAccessException()).when(personService).deletePerson(any(Person.class));
 
 		mockMvc.perform(
 				delete("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON))
@@ -248,7 +258,7 @@ class CRUDControllerTest {
 	@Test
 	public void deleteFirestationMapping_whenMappingDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new EntityMissingException()).when(service).deleteFirestationMapping(any(Firestation.class));
+		doThrow(new EntityMissingException()).when(firestationService).deleteFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError());
@@ -257,7 +267,7 @@ class CRUDControllerTest {
 	@Test
 	public void deleteFirestationMapping_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new FileAccessException()).when(service).deleteFirestationMapping(any(Firestation.class));
+		doThrow(new FileAccessException()).when(firestationService).deleteFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
@@ -275,7 +285,7 @@ class CRUDControllerTest {
 	@Test
 	public void deleteMedicalRecord_whenMedicalRecordDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		MedicalRecord mr = new MedicalRecord("john", "doe", "01-01-1900", List.of("test", "test"), List.of("test"));
-		doThrow(new EntityMissingException()).when(service).deleteMedicalRecord(any(MedicalRecord.class));
+		doThrow(new EntityMissingException()).when(medicalrecordService).deleteMedicalRecord(any(MedicalRecord.class));
 
 		mockMvc.perform(
 				delete("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON))
@@ -285,7 +295,7 @@ class CRUDControllerTest {
 	@Test
 	public void deleteMedicalRecord_whenDataBaseAccessError_send_5xx() throws JsonProcessingException, Exception {
 		MedicalRecord mr = new MedicalRecord("john", "doe", "01-01-1900", List.of("test", "test"), List.of("test"));
-		doThrow(new FileAccessException()).when(service).deleteMedicalRecord(any(MedicalRecord.class));
+		doThrow(new FileAccessException()).when(medicalrecordService).deleteMedicalRecord(any(MedicalRecord.class));
 
 		mockMvc.perform(
 				delete("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON))

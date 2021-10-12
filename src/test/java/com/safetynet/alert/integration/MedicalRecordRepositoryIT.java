@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
-import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.repository.MedicalRecordRepository;
 
@@ -26,9 +25,7 @@ class MedicalRecordRepositoryIT {
 
 	@BeforeEach
 	private void setUpPerTest() {
-		DataCollection dc = new DataCollection();
-		dc.setMedicalrecords(new ArrayList<MedicalRecord>());
-		dataCollectionDAO.update(dc);
+		dataCollectionDAO.updateMedicalRecord(new ArrayList<MedicalRecord>());
 	}
 
 	@Test

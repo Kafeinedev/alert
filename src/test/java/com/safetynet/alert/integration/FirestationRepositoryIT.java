@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
-import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Firestation;
 import com.safetynet.alert.repository.FirestationRepository;
 
@@ -26,9 +25,7 @@ class FirestationRepositoryIT {
 
 	@BeforeEach
 	private void setUpPerTest() {
-		DataCollection dc = new DataCollection();
-		dc.setFirestations(new ArrayList<Firestation>());
-		dataCollectionDAO.update(dc);
+		dataCollectionDAO.updateFirestation(new ArrayList<Firestation>());
 	}
 
 	@Test

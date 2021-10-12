@@ -1,6 +1,7 @@
 package com.safetynet.alert.DAO;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alert.config.JsonDataConfig;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
+import com.safetynet.alert.model.Firestation;
+import com.safetynet.alert.model.MedicalRecord;
+import com.safetynet.alert.model.Person;
 
 @Repository
 public class DataCollectionJsonFileDAO {
@@ -34,28 +38,10 @@ public class DataCollectionJsonFileDAO {
 			log.error("Error while reading json file", e);
 			throw new FileAccessException();
 		}
-		return dataCollection;
+		return dataCollection != null ? dataCollection : new DataCollection();
 	}
 
-	public DataCollection getAll() throws FileAccessException {
-		return readData();
-	}
-
-	public void update(DataCollection updatedDataCollection) throws FileAccessException {
-		DataCollection dataCollection = readData();
-
-		if (dataCollection == null) {
-			dataCollection = new DataCollection();
-		}
-		if (updatedDataCollection.getPersons() != null) {
-			dataCollection.setPersons(updatedDataCollection.getPersons());
-		}
-		if (updatedDataCollection.getFirestations() != null) {
-			dataCollection.setFirestations(updatedDataCollection.getFirestations());
-		}
-		if (updatedDataCollection.getMedicalrecords() != null) {
-			dataCollection.setMedicalrecords(updatedDataCollection.getMedicalrecords());
-		}
+	private void writeData(DataCollection dataCollection) throws FileAccessException {
 		try {
 			objectMapper.writeValue(new File(config.getPath()), dataCollection);
 		} catch (Exception e) {
@@ -63,4 +49,27 @@ public class DataCollectionJsonFileDAO {
 			throw new FileAccessException();
 		}
 	}
+
+	public DataCollection getAll() throws FileAccessException {
+		return readData();
+	}
+
+	public void updatePerson(List<Person> persons) throws FileAccessException {
+		DataCollection dataCollection = readData();
+		dataCollection.setPersons(persons);
+		writeData(dataCollection);
+	}
+
+	public void updateFirestation(List<Firestation> firestations) throws FileAccessException {
+		DataCollection dataCollection = readData();
+		dataCollection.setFirestations(firestations);
+		writeData(dataCollection);
+	}
+
+	public void updateMedicalRecord(List<MedicalRecord> medicalRecords) throws FileAccessException {
+		DataCollection dataCollection = readData();
+		dataCollection.setMedicalrecords(medicalRecords);
+		writeData(dataCollection);
+	}
+
 }

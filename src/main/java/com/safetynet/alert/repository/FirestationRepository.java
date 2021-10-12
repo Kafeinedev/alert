@@ -30,7 +30,7 @@ public class FirestationRepository {
 	public List<Firestation> getAll() throws FileAccessException {
 		DataCollection dataCollection = dataCollectionDAO.getAll();
 
-		return dataCollection != null && dataCollection.getFirestations() != null ? dataCollection.getFirestations()
+		return dataCollection.getFirestations() != null ? dataCollection.getFirestations()
 				: new ArrayList<Firestation>();
 	}
 
@@ -44,9 +44,7 @@ public class FirestationRepository {
 		}
 
 		firestations.add(firestation);
-		DataCollection addedFirestation = new DataCollection();
-		addedFirestation.setFirestations(firestations);
-		dataCollectionDAO.update(addedFirestation);
+		dataCollectionDAO.updateFirestation(firestations);
 	}
 
 	public void update(Firestation firestation) throws FileAccessException, EntityMissingException {
@@ -59,9 +57,7 @@ public class FirestationRepository {
 		}
 
 		firestations.set(index, firestation);
-		DataCollection updatedFirestation = new DataCollection();
-		updatedFirestation.setFirestations(firestations);
-		dataCollectionDAO.update(updatedFirestation);
+		dataCollectionDAO.updateFirestation(firestations);
 	}
 
 	public void deleteAddressMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
@@ -74,9 +70,7 @@ public class FirestationRepository {
 		}
 
 		firestations.remove(index);
-		DataCollection deletedAddress = new DataCollection();
-		deletedAddress.setFirestations(firestations);
-		dataCollectionDAO.update(deletedAddress);
+		dataCollectionDAO.updateFirestation(firestations);
 	}
 
 	public void deleteStationNumberMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
@@ -91,9 +85,8 @@ public class FirestationRepository {
 		for (int index : indexes) {
 			firestations.remove(index);
 		}
-		DataCollection deletedAddress = new DataCollection();
-		deletedAddress.setFirestations(firestations);
-		dataCollectionDAO.update(deletedAddress);
+
+		dataCollectionDAO.updateFirestation(firestations);
 	}
 
 	private int findIndexByAddress(Firestation firestation, List<Firestation> firestations) {

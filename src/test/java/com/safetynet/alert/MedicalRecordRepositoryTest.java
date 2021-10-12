@@ -54,7 +54,7 @@ public class MedicalRecordRepositoryTest {
 
 	@Test
 	public void getAll_whenDatabaseEmpty_returnEmptyList() {
-		when(mockDataCollectionDAO.getAll()).thenReturn(null);
+		when(mockDataCollectionDAO.getAll()).thenReturn(new DataCollection());
 
 		List<MedicalRecord> toTest = medicalRecordRepository.getAll();
 
