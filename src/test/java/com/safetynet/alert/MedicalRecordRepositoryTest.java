@@ -88,4 +88,22 @@ public class MedicalRecordRepositoryTest {
 			medicalRecordRepository.delete(mr);
 		});
 	}
+
+	@Test
+	public void findByFirstNameAndLastName_whenWorkingProperly_returnCorrectMedicalRecord() {
+		MedicalRecord test = medicalRecordRepository.findByFirstNameAndLastName("bonjour", "jemappelle");
+
+		assertThat(test.getFirstName()).isEqualTo("bonjour");
+		assertThat(test.getLastName()).isEqualTo("jemappelle");
+		assertThat(test.getBirthdate()).isEqualTo("datedenaissance");
+		assertThat(test.getMedications()).isEqualTo(List.of("bla", "boa"));
+		assertThat(test.getAllergies()).isEqualTo(List.of("hihihi"));
+	}
+
+	@Test
+	public void findByFirstNameAndLastName_whenEntityMissing_returnNull() {
+		MedicalRecord test = medicalRecordRepository.findByFirstNameAndLastName("personneici", "jemappelle");
+
+		assertThat(test).isNull();
+	}
 }

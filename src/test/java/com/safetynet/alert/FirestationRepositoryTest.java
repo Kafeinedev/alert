@@ -96,4 +96,36 @@ class FirestationRepositoryTest {
 		});
 	}
 
+	// This test may fail if the way to return data is changed /!\
+	@Test
+	public void findByStation_whenWorkingProperly_returnListOfAddress() {
+		dataCollection.getFirestations().add(new Firestation("testo domingo", "1"));
+
+		List<String> test = firestationRepository.findByStation("1");
+
+		assertThat(test.size()).isEqualTo(2);
+		assertThat(test.get(0)).isEqualTo("this is another address");
+		assertThat(test.get(1)).isEqualTo("testo domingo");
+	}
+
+	@Test
+	public void findByStation_whenNoStationServeThatAddress_returnEmptyList() {
+		List<String> test = firestationRepository.findByStation("yo n'axiste pas");
+
+		assertThat(test.size()).isEqualTo(0);
+	}
+
+	@Test
+	public void findByAddress_whenWorkingProperly_returnStationNumber() {
+		String number = firestationRepository.findByAddress("uno dos tres");
+
+		assertThat(number).isEqualTo("3");
+	}
+
+	@Test
+	public void findByAddress_whenNoStationServingThatAddress_returnEmptyString() {
+		String number = firestationRepository.findByAddress("nothing to see here move along");
+
+		assertThat(number).isEqualTo("");
+	}
 }

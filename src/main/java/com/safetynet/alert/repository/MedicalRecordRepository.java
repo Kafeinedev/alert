@@ -72,6 +72,17 @@ public class MedicalRecordRepository {
 		dataCollectionDAO.updateMedicalRecord(medicalRecords);
 	}
 
+	public MedicalRecord findByFirstNameAndLastName(String firstName, String lastName) {
+		List<MedicalRecord> medicalRecords = getAll();
+		int index = findIndex(new MedicalRecord(firstName, lastName, null, null, null), medicalRecords);
+
+		if (index >= 0) {
+			return medicalRecords.get(index);
+		}
+
+		return null;
+	}
+
 	private int findIndex(MedicalRecord medicalRecord, List<MedicalRecord> medicalRecords) {
 		for (int i = 0; i < medicalRecords.size(); i++) {
 			if (medicalRecords.get(i).getFirstName().equals(medicalRecord.getFirstName())
@@ -81,5 +92,4 @@ public class MedicalRecordRepository {
 		}
 		return -1;
 	}
-
 }

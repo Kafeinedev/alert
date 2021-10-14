@@ -83,6 +83,32 @@ public class PersonRepository {
 		return null;
 	}
 
+	public List<Person> findByAddress(String address) {
+		List<Person> persons = getAll();
+		List<Person> ret = new ArrayList<Person>();
+
+		for (Person p : persons) {
+			if (p.getAddress().equals(address)) {
+				ret.add(p);
+			}
+		}
+
+		return ret;
+	}
+
+	public List<Person> findByCity(String city) {
+		List<Person> persons = getAll();
+		List<Person> ret = new ArrayList<Person>();
+
+		for (Person p : persons) {
+			if (p.getCity().equals(city)) {
+				ret.add(p);
+			}
+		}
+
+		return ret;
+	}
+
 	private int findIndex(Person person, List<Person> persons) {
 		for (int i = 0; i < persons.size(); i++) {
 			if (person.getFirstName().equals(persons.get(i).getFirstName())

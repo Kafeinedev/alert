@@ -104,10 +104,50 @@ class PersonRepositoryTest {
 	}
 
 	@Test
-	public void findByFirstNameAndLastName_whenWorkingIncorrectly_returnNull() {
+	public void findByFirstNameAndLastName_whenEntityMissing_returnNull() {
 		Person toTest = personRepository.findByFirstNameAndLastName("jenexiste", "poh");
 
 		assertThat(toTest).isNull();
+	}
+
+	// This test may fail if the way to return data/search is changed /!\
+	@Test
+	public void findByAddress_whenWorkingProperly_returnListOfPerson() {
+		dataCollection.getPersons().add(new Person("sge", "seg", "nulle part", "sg", "drg", "es", "f"));
+		dataCollection.getPersons().add(new Person("vivele", "vendredi", "this", "another", "place", "to", "assert"));
+
+		List<Person> test = personRepository.findByAddress("this");
+
+		assertThat(test.size()).isEqualTo(2);
+		assertThat(test.get(0).getFirstName()).isEqualTo("jessuis");
+		assertThat(test.get(1).getFirstName()).isEqualTo("vivele");
+	}
+
+	@Test
+	public void findByAddress_whenAddressMissing_returnEmptyList() {
+		List<Person> test = personRepository.findByAddress("nawak");
+
+		assertThat(test.size()).isEqualTo(0);
+	}
+
+	// This test may fail if the way to return data/search is changed /!\
+	@Test
+	public void findByCity_whenWorkingProperly_returnListOfPerson() {
+		dataCollection.getPersons().add(new Person("sge", "seg", "nulle part", "ville", "drg", "es", "f"));
+		dataCollection.getPersons().add(new Person("vivele", "vendredi", "this", "ville", "place", "to", "assert"));
+
+		List<Person> test = personRepository.findByCity("ville");
+
+		assertThat(test.size()).isEqualTo(2);
+		assertThat(test.get(0).getFirstName()).isEqualTo("sge");
+		assertThat(test.get(1).getFirstName()).isEqualTo("vivele");
+	}
+
+	@Test
+	public void findByCity_whenCityMissing_returnEmptyList() {
+		List<Person> test = personRepository.findByCity("nawak");
+
+		assertThat(test.size()).isEqualTo(0);
 	}
 
 }
