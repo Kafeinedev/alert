@@ -29,16 +29,17 @@ class MedicalRecordIT {
 	private MedicalRecordController controller;
 
 	@Autowired
-	private JsonFileReaderWriter dataCollectionDAO;
+	private JsonFileReaderWriter jsonFileIO;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	private MockMvc mockMvc;
-
-	private ObjectMapper mapper = new ObjectMapper();
 
 	@BeforeEach
 	private void setUp() throws Exception {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-		dataCollectionDAO.updateMedicalRecord(new ArrayList<MedicalRecord>());
+		jsonFileIO.updateMedicalRecord(new ArrayList<MedicalRecord>());
 	}
 
 	@Test
@@ -48,7 +49,7 @@ class MedicalRecordIT {
 		mockMvc.perform(post("/medicalRecord").content(mapper.writeValueAsString(toAdd))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<MedicalRecord> test = dataCollectionDAO.getDataCollection().getMedicalrecords();
+		List<MedicalRecord> test = jsonFileIO.getDataCollection().getMedicalrecords();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("bla");
 		assertThat(test.get(0).getLastName()).isEqualTo("blo");
@@ -69,7 +70,7 @@ class MedicalRecordIT {
 		mockMvc.perform(
 				put("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON));
 
-		List<MedicalRecord> test = dataCollectionDAO.getDataCollection().getMedicalrecords();
+		List<MedicalRecord> test = jsonFileIO.getDataCollection().getMedicalrecords();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("bla");
 		assertThat(test.get(0).getLastName()).isEqualTo("blo");
@@ -91,7 +92,7 @@ class MedicalRecordIT {
 				.content(mapper.writeValueAsString(new MedicalRecord("bla", "blo", null, null, null)))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<MedicalRecord> test = dataCollectionDAO.getDataCollection().getMedicalrecords();
+		List<MedicalRecord> test = jsonFileIO.getDataCollection().getMedicalrecords();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("super");
 		assertThat(test.get(0).getLastName()).isEqualTo("man");

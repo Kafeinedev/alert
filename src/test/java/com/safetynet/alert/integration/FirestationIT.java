@@ -29,16 +29,17 @@ class FirestationIT {
 	private FirestationController controller;
 
 	@Autowired
-	private JsonFileReaderWriter dataCollectionDAO;
+	private JsonFileReaderWriter jsonFileIO;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	private MockMvc mockMvc;
-
-	private ObjectMapper mapper = new ObjectMapper();
 
 	@BeforeEach
 	private void setUp() throws Exception {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-		dataCollectionDAO.updateFirestation(new ArrayList<Firestation>());
+		jsonFileIO.updateFirestation(new ArrayList<Firestation>());
 	}
 
 	@Test
@@ -48,7 +49,7 @@ class FirestationIT {
 		mockMvc.perform(post("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
+		List<Firestation> test = jsonFileIO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getAddress()).isEqualTo("pin pon çay merkril");
 		assertThat(test.get(0).getStation()).isEqualTo("3");
@@ -64,7 +65,7 @@ class FirestationIT {
 		mockMvc.perform(put("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
+		List<Firestation> test = jsonFileIO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getAddress()).isEqualTo("pin pon çay merkril");
 		assertThat(test.get(0).getStation()).isEqualTo("5");
@@ -84,7 +85,7 @@ class FirestationIT {
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(new Firestation("douce France", "2")))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
+		List<Firestation> test = jsonFileIO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(2);
 		assertThat(test.get(0).getAddress()).isEqualTo("pin pon çay merkril");
 		assertThat(test.get(1).getAddress()).isEqualTo("Je suis un génie");
@@ -104,7 +105,7 @@ class FirestationIT {
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(new Firestation(null, "2")))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
+		List<Firestation> test = jsonFileIO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getAddress()).isEqualTo("douce France");
 		assertThat(test.get(0).getStation()).isEqualTo("1");

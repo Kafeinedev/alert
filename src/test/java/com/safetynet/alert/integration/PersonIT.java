@@ -29,16 +29,17 @@ class PersonIT {
 	private PersonController controller;
 
 	@Autowired
-	private JsonFileReaderWriter dataCollectionDAO;
+	private JsonFileReaderWriter jsonFileIO;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	private MockMvc mockMvc;
-
-	private ObjectMapper mapper = new ObjectMapper();
 
 	@BeforeEach
 	private void setUpPerTest() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-		dataCollectionDAO.updatePerson(new ArrayList<Person>());
+		jsonFileIO.updatePerson(new ArrayList<Person>());
 	}
 
 	@Test
@@ -48,7 +49,7 @@ class PersonIT {
 		mockMvc.perform(
 				post("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON));
 
-		List<Person> test = dataCollectionDAO.getDataCollection().getPersons();
+		List<Person> test = jsonFileIO.getDataCollection().getPersons();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("chuck");
 		assertThat(test.get(0).getLastName()).isEqualTo("norris");
@@ -70,7 +71,7 @@ class PersonIT {
 		mockMvc.perform(
 				put("/person").content(mapper.writeValueAsString(personTwo)).contentType(MediaType.APPLICATION_JSON));
 
-		List<Person> test = dataCollectionDAO.getDataCollection().getPersons();
+		List<Person> test = jsonFileIO.getDataCollection().getPersons();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("chuck");
 		assertThat(test.get(0).getLastName()).isEqualTo("norris");
@@ -94,7 +95,7 @@ class PersonIT {
 				.content(mapper.writeValueAsString(new Person("chuck", "norris", null, null, null, null, null)))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Person> test = dataCollectionDAO.getDataCollection().getPersons();
+		List<Person> test = jsonFileIO.getDataCollection().getPersons();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("blabla");
 		assertThat(test.get(0).getLastName()).isEqualTo("car");

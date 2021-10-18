@@ -51,7 +51,7 @@ public class FirestationService {
 	public ArrayNode stations(List<String> stationNumbers) {
 		ArrayNode houses = mapper.createArrayNode();
 		for (String station : stationNumbers) {
-			houses.add(station(station));
+			houses.addAll(station(station));
 		}
 		return houses;
 	}
@@ -131,6 +131,7 @@ public class FirestationService {
 			MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 					person.getLastName());
 			PersonUtil.addNameToNode(inhabitant, person);
+			inhabitant.put("phone", person.getPhone());
 			inhabitant.put("age", MedicalRecordUtil.calculateAge(medicalRecord));
 			inhabitant.set("patientHistory", MedicalRecordUtil.patientHistory(medicalRecord));
 
