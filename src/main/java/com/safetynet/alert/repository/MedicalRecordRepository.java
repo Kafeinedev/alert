@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.exception.FileAccessException;
@@ -20,22 +20,22 @@ public class MedicalRecordRepository {
 
 	private static Logger log = LogManager.getLogger("MedicalRecordRepository logger");
 
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter dataCollectionDAO;
 
 	@Autowired
-	public MedicalRecordRepository(DataCollectionJsonFileDAO dataCollectionDAO) {
+	public MedicalRecordRepository(JsonFileReaderWriter dataCollectionDAO) {
 		this.dataCollectionDAO = dataCollectionDAO;
 	}
 
-	public List<MedicalRecord> getAll() {
-		DataCollection dataCollection = dataCollectionDAO.getAll();
+	public List<MedicalRecord> getAllMedicalRecords() {
+		DataCollection dataCollection = dataCollectionDAO.getDataCollection();
 
 		return dataCollection.getMedicalrecords() != null ? dataCollection.getMedicalrecords()
 				: new ArrayList<MedicalRecord>();
 	}
 
 	public void add(MedicalRecord medicalRecord) throws FileAccessException, EntityAlreadyPresentException {
-		List<MedicalRecord> medicalRecords = getAll();
+		List<MedicalRecord> medicalRecords = getAllMedicalRecords();
 
 		if (findIndex(medicalRecord, medicalRecords) != -1) {
 			log.error("Error trying to add a medicalrecord that already exist");
@@ -47,7 +47,7 @@ public class MedicalRecordRepository {
 	}
 
 	public void update(MedicalRecord medicalRecord) throws FileAccessException, EntityMissingException {
-		List<MedicalRecord> medicalRecords = getAll();
+		List<MedicalRecord> medicalRecords = getAllMedicalRecords();
 		int index = findIndex(medicalRecord, medicalRecords);
 
 		if (index < 0) {
@@ -60,7 +60,7 @@ public class MedicalRecordRepository {
 	}
 
 	public void delete(MedicalRecord medicalRecord) throws FileAccessException, EntityMissingException {
-		List<MedicalRecord> medicalRecords = getAll();
+		List<MedicalRecord> medicalRecords = getAllMedicalRecords();
 		int index = findIndex(medicalRecord, medicalRecords);
 
 		if (index < 0) {
@@ -73,7 +73,7 @@ public class MedicalRecordRepository {
 	}
 
 	public MedicalRecord findByFirstNameAndLastName(String firstName, String lastName) {
-		List<MedicalRecord> medicalRecords = getAll();
+		List<MedicalRecord> medicalRecords = getAllMedicalRecords();
 		int index = findIndex(new MedicalRecord(firstName, lastName, null, null, null), medicalRecords);
 
 		if (index >= 0) {

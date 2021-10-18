@@ -18,18 +18,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
-import com.safetynet.alert.controller.CRUDFirestationController;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
+import com.safetynet.alert.controller.FirestationController;
 import com.safetynet.alert.model.Firestation;
 
 @SpringBootTest
 class FirestationIT {
 
 	@Autowired
-	private CRUDFirestationController controller;
+	private FirestationController controller;
 
 	@Autowired
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter dataCollectionDAO;
 
 	private MockMvc mockMvc;
 
@@ -48,7 +48,7 @@ class FirestationIT {
 		mockMvc.perform(post("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getAll().getFirestations();
+		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getAddress()).isEqualTo("pin pon çay merkril");
 		assertThat(test.get(0).getStation()).isEqualTo("3");
@@ -64,7 +64,7 @@ class FirestationIT {
 		mockMvc.perform(put("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getAll().getFirestations();
+		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getAddress()).isEqualTo("pin pon çay merkril");
 		assertThat(test.get(0).getStation()).isEqualTo("5");
@@ -84,7 +84,7 @@ class FirestationIT {
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(new Firestation("douce France", "2")))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getAll().getFirestations();
+		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(2);
 		assertThat(test.get(0).getAddress()).isEqualTo("pin pon çay merkril");
 		assertThat(test.get(1).getAddress()).isEqualTo("Je suis un génie");
@@ -104,7 +104,7 @@ class FirestationIT {
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(new Firestation(null, "2")))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Firestation> test = dataCollectionDAO.getAll().getFirestations();
+		List<Firestation> test = dataCollectionDAO.getDataCollection().getFirestations();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getAddress()).isEqualTo("douce France");
 		assertThat(test.get(0).getStation()).isEqualTo("1");

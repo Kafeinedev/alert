@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.alert.model.MedicalRecord;
-import com.safetynet.alert.service.CRUDMedicalRecordService;
+import com.safetynet.alert.service.MedicalRecordService;
 
 @RestController
-public class CRUDMedicalRecordController {
+public class MedicalRecordController {
 
 	@Autowired
-	private CRUDMedicalRecordService medicalRecordService;
+	private MedicalRecordService medicalRecordService;
 
 	@PostMapping("/medicalRecord")
 	public ResponseEntity<MedicalRecord> postMedicalRecord(@RequestBody MedicalRecord medicalRecord) {

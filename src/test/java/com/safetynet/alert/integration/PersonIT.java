@@ -18,18 +18,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
-import com.safetynet.alert.controller.CRUDPersonController;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
+import com.safetynet.alert.controller.PersonController;
 import com.safetynet.alert.model.Person;
 
 @SpringBootTest
 class PersonIT {
 
 	@Autowired
-	private CRUDPersonController controller;
+	private PersonController controller;
 
 	@Autowired
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter dataCollectionDAO;
 
 	private MockMvc mockMvc;
 
@@ -48,7 +48,7 @@ class PersonIT {
 		mockMvc.perform(
 				post("/person").content(mapper.writeValueAsString(person)).contentType(MediaType.APPLICATION_JSON));
 
-		List<Person> test = dataCollectionDAO.getAll().getPersons();
+		List<Person> test = dataCollectionDAO.getDataCollection().getPersons();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("chuck");
 		assertThat(test.get(0).getLastName()).isEqualTo("norris");
@@ -70,7 +70,7 @@ class PersonIT {
 		mockMvc.perform(
 				put("/person").content(mapper.writeValueAsString(personTwo)).contentType(MediaType.APPLICATION_JSON));
 
-		List<Person> test = dataCollectionDAO.getAll().getPersons();
+		List<Person> test = dataCollectionDAO.getDataCollection().getPersons();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("chuck");
 		assertThat(test.get(0).getLastName()).isEqualTo("norris");
@@ -94,7 +94,7 @@ class PersonIT {
 				.content(mapper.writeValueAsString(new Person("chuck", "norris", null, null, null, null, null)))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<Person> test = dataCollectionDAO.getAll().getPersons();
+		List<Person> test = dataCollectionDAO.getDataCollection().getPersons();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("blabla");
 		assertThat(test.get(0).getLastName()).isEqualTo("car");

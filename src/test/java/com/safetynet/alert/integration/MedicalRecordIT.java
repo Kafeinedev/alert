@@ -18,18 +18,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
-import com.safetynet.alert.controller.CRUDMedicalRecordController;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
+import com.safetynet.alert.controller.MedicalRecordController;
 import com.safetynet.alert.model.MedicalRecord;
 
 @SpringBootTest
 class MedicalRecordIT {
 
 	@Autowired
-	private CRUDMedicalRecordController controller;
+	private MedicalRecordController controller;
 
 	@Autowired
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter dataCollectionDAO;
 
 	private MockMvc mockMvc;
 
@@ -48,7 +48,7 @@ class MedicalRecordIT {
 		mockMvc.perform(post("/medicalRecord").content(mapper.writeValueAsString(toAdd))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<MedicalRecord> test = dataCollectionDAO.getAll().getMedicalrecords();
+		List<MedicalRecord> test = dataCollectionDAO.getDataCollection().getMedicalrecords();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("bla");
 		assertThat(test.get(0).getLastName()).isEqualTo("blo");
@@ -69,7 +69,7 @@ class MedicalRecordIT {
 		mockMvc.perform(
 				put("/medicalRecord").content(mapper.writeValueAsString(mr)).contentType(MediaType.APPLICATION_JSON));
 
-		List<MedicalRecord> test = dataCollectionDAO.getAll().getMedicalrecords();
+		List<MedicalRecord> test = dataCollectionDAO.getDataCollection().getMedicalrecords();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("bla");
 		assertThat(test.get(0).getLastName()).isEqualTo("blo");
@@ -91,7 +91,7 @@ class MedicalRecordIT {
 				.content(mapper.writeValueAsString(new MedicalRecord("bla", "blo", null, null, null)))
 				.contentType(MediaType.APPLICATION_JSON));
 
-		List<MedicalRecord> test = dataCollectionDAO.getAll().getMedicalrecords();
+		List<MedicalRecord> test = dataCollectionDAO.getDataCollection().getMedicalrecords();
 		assertThat(test.size()).isEqualTo(1);
 		assertThat(test.get(0).getFirstName()).isEqualTo("super");
 		assertThat(test.get(0).getLastName()).isEqualTo("man");

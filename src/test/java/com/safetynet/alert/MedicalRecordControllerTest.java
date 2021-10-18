@@ -19,21 +19,21 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.controller.CRUDMedicalRecordController;
+import com.safetynet.alert.controller.MedicalRecordController;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.MedicalRecord;
-import com.safetynet.alert.service.CRUDMedicalRecordService;
+import com.safetynet.alert.service.MedicalRecordService;
 
-@WebMvcTest(controllers = CRUDMedicalRecordController.class)
-class CRUDMedicalRecordControllerTest {
+@WebMvcTest(controllers = MedicalRecordController.class)
+class MedicalRecordControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@MockBean
-	private CRUDMedicalRecordService medicalrecordService;
+	private MedicalRecordService medicalrecordService;
 
 	private ObjectMapper mapper = new ObjectMapper();
 

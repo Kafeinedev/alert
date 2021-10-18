@@ -2,10 +2,15 @@ package com.safetynet.alert;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +21,23 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.controller.CRUDFirestationController;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.safetynet.alert.controller.FirestationController;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.Firestation;
-import com.safetynet.alert.service.CRUDFirestationService;
+import com.safetynet.alert.service.FirestationService;
 
-@WebMvcTest(controllers = CRUDFirestationController.class)
-class CRUDFirestationControllerTest {
+@WebMvcTest(controllers = FirestationController.class)
+class FirestationControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@MockBean
-	private CRUDFirestationService firestationService;
+	private FirestationService firestationService;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -113,4 +120,39 @@ class CRUDFirestationControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
 	}
 
+	@Test
+	public void floodStations_whenWorkingCorrectly_send200WithProperContent() throws Exception {
+		ArrayNode testDummy = mapper.createArrayNode();
+		testDummy.add("yes its correct");
+		when(firestationService.stations(List.of("test", "unique"))).thenReturn(testDummy);
+		mockMvc.perform(get("/flood/stations?stations=test,unique")).andExpect(status().isOk())
+				.andExpect(content().string(testDummy.toString()));
+	}
+
+	@Test
+	public void phoneAlert_whenWorkingCorrectly_send200WithProperContent() throws Exception {
+		ArrayNode phones = mapper.createArrayNode();
+		phones.add("none of this text matter");
+		when(firestationService.phoneAlert("1337")).thenReturn(phones);
+		mockMvc.perform(get("/phoneAlert?firestation=1337")).andExpect(status().isOk())
+				.andExpect(content().string(phones.toString()));
+	}
+
+	@Test
+	public void firestation_whenWorkingProperly_send200WithProperContent() throws Exception {
+		ObjectNode personsList = mapper.createObjectNode();
+		personsList.put("bip boop Im a top tier list", "pouet");
+		when(firestationService.firestation("number")).thenReturn(personsList);
+		mockMvc.perform(get("/firestation?stationNumber=number")).andExpect(status().isOk())
+				.andExpect(content().string(personsList.toString()));
+	}
+
+	@Test
+	public void fire_whenWorkingProperly_send200WithProperContent() throws Exception {
+		ObjectNode house = mapper.createObjectNode();
+		house.put("this is a test", "what's inside doesnt matter");
+		when(firestationService.fire("a dress")).thenReturn(house);
+		mockMvc.perform(get("/fire?address=a dress")).andExpect(status().isOk())
+				.andExpect(content().string(house.toString()));
+	}
 }

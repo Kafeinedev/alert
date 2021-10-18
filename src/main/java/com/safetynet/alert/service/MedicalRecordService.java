@@ -7,7 +7,7 @@ import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.repository.MedicalRecordRepository;
 
 @Service
-public class CRUDMedicalRecordService {
+public class MedicalRecordService {
 
 	@Autowired
 	private MedicalRecordRepository medicalRecordRepository;

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Person;
 import com.safetynet.alert.repository.PersonRepository;
@@ -24,7 +24,7 @@ import com.safetynet.alert.exception.EntityMissingException;
 class PersonRepositoryTest {
 
 	@Mock
-	private DataCollectionJsonFileDAO mockDataCollectionDAO;
+	private JsonFileReaderWriter mockJsonFileIO;
 
 	private PersonRepository personRepository;
 
@@ -36,13 +36,13 @@ class PersonRepositoryTest {
 		Person person = new Person("jessuis", "groot", "this", "is", "a", "test", "!");
 		dataCollection.setPersons(new ArrayList<Person>());
 		dataCollection.getPersons().add(person);
-		when(mockDataCollectionDAO.getAll()).thenReturn(dataCollection);
-		personRepository = new PersonRepository(mockDataCollectionDAO);
+		when(mockJsonFileIO.getDataCollection()).thenReturn(dataCollection);
+		personRepository = new PersonRepository(mockJsonFileIO);
 	}
 
 	@Test
 	public void getAll_whenWorkingProperly_returnListOfPersons() {
-		List<Person> toTest = personRepository.getAll();
+		List<Person> toTest = personRepository.getAllPersons();
 
 		assertThat(toTest.size()).isEqualTo(1);
 		assertThat(toTest.get(0).getFirstName()).isEqualTo("jessuis");
@@ -56,9 +56,9 @@ class PersonRepositoryTest {
 
 	@Test
 	public void getAll_whenDatabaseEmpty_returnEmptyList() {
-		when(mockDataCollectionDAO.getAll()).thenReturn(new DataCollection());
+		when(mockJsonFileIO.getDataCollection()).thenReturn(new DataCollection());
 
-		List<Person> toTest = personRepository.getAll();
+		List<Person> toTest = personRepository.getAllPersons();
 
 		assertThat(toTest.size()).isEqualTo(0);
 	}
@@ -146,6 +146,26 @@ class PersonRepositoryTest {
 	@Test
 	public void findByCity_whenCityMissing_returnEmptyList() {
 		List<Person> test = personRepository.findByCity("nawak");
+
+		assertThat(test.size()).isEqualTo(0);
+	}
+
+	@Test
+	public void findByName_whenWorkingProperly_returnListOfPerson() {
+		dataCollection.getPersons().add(new Person("sge", "groot", "nulle part", "ville", "drg", "es", "f"));
+		dataCollection.getPersons().add(new Person("vivele", "vendredi", "this", "ville", "place", "to", "assert"));
+
+		List<Person> test = personRepository.findByLastName("groot");
+
+		assertThat(test.size()).isEqualTo(2);
+		assertThat(test.get(0).getFirstName()).isEqualTo("jessuis");
+		assertThat(test.get(1).getFirstName()).isEqualTo("sge");
+
+	}
+
+	@Test
+	public void findByName_whenNobodyWithThatName_returnEmptyList() {
+		List<Person> test = personRepository.findByLastName("nawak");
 
 		assertThat(test.size()).isEqualTo(0);
 	}

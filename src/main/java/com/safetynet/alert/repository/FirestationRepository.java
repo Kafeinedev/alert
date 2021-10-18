@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.exception.FileAccessException;
@@ -20,22 +20,22 @@ public class FirestationRepository {
 
 	private static Logger log = LogManager.getLogger("FirestationRepository logger");
 
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter dataCollectionDAO;
 
 	@Autowired
-	public FirestationRepository(DataCollectionJsonFileDAO dataCollectionDAO) {
+	public FirestationRepository(JsonFileReaderWriter dataCollectionDAO) {
 		this.dataCollectionDAO = dataCollectionDAO;
 	}
 
-	public List<Firestation> getAll() throws FileAccessException {
-		DataCollection dataCollection = dataCollectionDAO.getAll();
+	public List<Firestation> getAllFirestations() throws FileAccessException {
+		DataCollection dataCollection = dataCollectionDAO.getDataCollection();
 
 		return dataCollection.getFirestations() != null ? dataCollection.getFirestations()
 				: new ArrayList<Firestation>();
 	}
 
 	public void add(Firestation firestation) throws FileAccessException, EntityAlreadyPresentException {
-		List<Firestation> firestations = getAll();
+		List<Firestation> firestations = getAllFirestations();
 		int index = findIndexByAddress(firestation, firestations);
 
 		if (index != -1 && firestations.get(index).getStation().equals(firestation.getStation())) {
@@ -48,7 +48,7 @@ public class FirestationRepository {
 	}
 
 	public void update(Firestation firestation) throws FileAccessException, EntityMissingException {
-		List<Firestation> firestations = getAll();
+		List<Firestation> firestations = getAllFirestations();
 		int index = findIndexByAddress(firestation, firestations);
 
 		if (index < 0) {
@@ -61,7 +61,7 @@ public class FirestationRepository {
 	}
 
 	public void deleteAddressMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
-		List<Firestation> firestations = getAll();
+		List<Firestation> firestations = getAllFirestations();
 		int index = findIndexByAddress(firestation, firestations);
 
 		if (index < 0) {
@@ -74,7 +74,7 @@ public class FirestationRepository {
 	}
 
 	public void deleteStationNumberMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
-		List<Firestation> firestations = getAll();
+		List<Firestation> firestations = getAllFirestations();
 		boolean missing = true;
 		int i = 0;
 
@@ -95,7 +95,7 @@ public class FirestationRepository {
 
 	public List<String> findByStation(String station) {
 		List<String> ret = new ArrayList<String>();
-		List<Firestation> firestations = getAll();
+		List<Firestation> firestations = getAllFirestations();
 
 		for (Firestation f : firestations) {
 			if (f.getStation().equals(station)) {
@@ -107,7 +107,7 @@ public class FirestationRepository {
 	}
 
 	public String findByAddress(String address) {
-		List<Firestation> firestations = getAll();
+		List<Firestation> firestations = getAllFirestations();
 		int index = findIndexByAddress(new Firestation(address, null), firestations);
 
 		return index >= 0 ? firestations.get(index).getStation() : "";

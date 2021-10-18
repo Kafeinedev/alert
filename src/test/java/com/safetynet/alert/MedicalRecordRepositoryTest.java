@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.model.DataCollection;
@@ -24,7 +24,7 @@ import com.safetynet.alert.repository.MedicalRecordRepository;
 public class MedicalRecordRepositoryTest {
 
 	@Mock
-	private DataCollectionJsonFileDAO mockDataCollectionDAO;
+	private JsonFileReaderWriter mockJsonFileIO;
 
 	private MedicalRecordRepository medicalRecordRepository;
 
@@ -36,13 +36,13 @@ public class MedicalRecordRepositoryTest {
 		dataCollection.setMedicalrecords(new ArrayList<MedicalRecord>());
 		dataCollection.getMedicalrecords().add(new MedicalRecord("bonjour", "jemappelle", "datedenaissance",
 				List.of("bla", "boa"), List.of("hihihi")));
-		when(mockDataCollectionDAO.getAll()).thenReturn(dataCollection);
-		medicalRecordRepository = new MedicalRecordRepository(mockDataCollectionDAO);
+		when(mockJsonFileIO.getDataCollection()).thenReturn(dataCollection);
+		medicalRecordRepository = new MedicalRecordRepository(mockJsonFileIO);
 	}
 
 	@Test
 	public void getAll_whenWorkingProperly_returnListOfMedicalRecord() {
-		List<MedicalRecord> toTest = medicalRecordRepository.getAll();
+		List<MedicalRecord> toTest = medicalRecordRepository.getAllMedicalRecords();
 
 		assertThat(toTest.size()).isEqualTo(1);
 		assertThat(toTest.get(0).getFirstName()).isEqualTo("bonjour");
@@ -54,9 +54,9 @@ public class MedicalRecordRepositoryTest {
 
 	@Test
 	public void getAll_whenDatabaseEmpty_returnEmptyList() {
-		when(mockDataCollectionDAO.getAll()).thenReturn(new DataCollection());
+		when(mockJsonFileIO.getDataCollection()).thenReturn(new DataCollection());
 
-		List<MedicalRecord> toTest = medicalRecordRepository.getAll();
+		List<MedicalRecord> toTest = medicalRecordRepository.getAllMedicalRecords();
 
 		assertThat(toTest.size()).isEqualTo(0);
 	}

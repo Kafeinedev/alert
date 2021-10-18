@@ -17,7 +17,7 @@ import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.model.Person;
 
 @Repository
-public class DataCollectionJsonFileDAO {
+public class JsonFileReaderWriter {
 
 	private static Logger log = LogManager.getLogger("DataCollectionDAO logger");
 
@@ -25,7 +25,7 @@ public class DataCollectionJsonFileDAO {
 	private JsonDataConfig config;
 
 	@Autowired
-	public DataCollectionJsonFileDAO(ObjectMapper objectMapper, JsonDataConfig config) {
+	public JsonFileReaderWriter(ObjectMapper objectMapper, JsonDataConfig config) {
 		this.objectMapper = objectMapper;
 		this.config = config;
 	}
@@ -50,7 +50,7 @@ public class DataCollectionJsonFileDAO {
 		}
 	}
 
-	public DataCollection getAll() throws FileAccessException {
+	public DataCollection getDataCollection() throws FileAccessException {
 		return readData();
 	}
 

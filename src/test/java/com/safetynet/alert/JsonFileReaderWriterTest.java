@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.config.JsonDataConfig;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
@@ -31,20 +31,20 @@ import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.model.Firestation;
 
 @ExtendWith(MockitoExtension.class)
-class DataCollectionJsonFileDAOTest {
+class JsonFileReaderWriterTest {
 
 	@Mock
 	private ObjectMapper mockObjectMapper;
 	@Mock
 	private JsonDataConfig mockDataConfig;
 
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter JsonFileIO;
 
 	private static DataCollection dataCollection;
 
 	@BeforeEach
 	private void setUp() {
-		dataCollectionDAO = new DataCollectionJsonFileDAO(mockObjectMapper, mockDataConfig);
+		JsonFileIO = new JsonFileReaderWriter(mockObjectMapper, mockDataConfig);
 		List<Firestation> firestations = new ArrayList<Firestation>();
 		firestations.add(new Firestation("abc", "def"));
 		dataCollection = new DataCollection();
@@ -59,7 +59,7 @@ class DataCollectionJsonFileDAOTest {
 		when(mockObjectMapper.readValue(new File("nothing_to_see_here_move_along"), DataCollection.class))
 				.thenReturn(dataCollection);
 
-		DataCollection toTest = dataCollectionDAO.getAll();
+		DataCollection toTest = JsonFileIO.getDataCollection();
 		assertThat(toTest.getFirestations().get(0).getAddress())
 				.isEqualTo(dataCollection.getFirestations().get(0).getAddress());
 		assertThat(toTest.getFirestations().get(0).getStation())
@@ -75,7 +75,7 @@ class DataCollectionJsonFileDAOTest {
 				DataCollection.class)).thenThrow(new MockitoException("Unit test exception"));
 
 		assertThrows(FileAccessException.class, () -> {
-			dataCollectionDAO.getAll();
+			JsonFileIO.getDataCollection();
 		});
 	}
 
@@ -88,7 +88,7 @@ class DataCollectionJsonFileDAOTest {
 				any(DataCollection.class));
 
 		assertThrows(FileAccessException.class, () -> {
-			dataCollectionDAO.updatePerson(new ArrayList<Person>());
+			JsonFileIO.updatePerson(new ArrayList<Person>());
 		});
 	}
 
@@ -101,7 +101,7 @@ class DataCollectionJsonFileDAOTest {
 				any(DataCollection.class));
 
 		assertThrows(FileAccessException.class, () -> {
-			dataCollectionDAO.updateFirestation(new ArrayList<Firestation>());
+			JsonFileIO.updateFirestation(new ArrayList<Firestation>());
 		});
 
 	}
@@ -115,7 +115,7 @@ class DataCollectionJsonFileDAOTest {
 				any(DataCollection.class));
 
 		assertThrows(FileAccessException.class, () -> {
-			dataCollectionDAO.updateMedicalRecord(new ArrayList<MedicalRecord>());
+			JsonFileIO.updateMedicalRecord(new ArrayList<MedicalRecord>());
 		});
 	}
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.model.DataCollection;
@@ -24,7 +24,7 @@ import com.safetynet.alert.repository.FirestationRepository;
 class FirestationRepositoryTest {
 
 	@Mock
-	private DataCollectionJsonFileDAO mockDataCollectionDAO;
+	private JsonFileReaderWriter mockFileIO;
 
 	private FirestationRepository firestationRepository;
 
@@ -37,13 +37,13 @@ class FirestationRepositoryTest {
 		dataCollection.getFirestations().add(new Firestation("this is an address", "2"));
 		dataCollection.getFirestations().add(new Firestation("this is another address", "1"));
 		dataCollection.getFirestations().add(new Firestation("uno dos tres", "3"));
-		when(mockDataCollectionDAO.getAll()).thenReturn(dataCollection);
-		firestationRepository = new FirestationRepository(mockDataCollectionDAO);
+		when(mockFileIO.getDataCollection()).thenReturn(dataCollection);
+		firestationRepository = new FirestationRepository(mockFileIO);
 	}
 
 	@Test
 	public void getAll_whenWorkingProperly_returnListOfFirestation() {
-		List<Firestation> toTest = firestationRepository.getAll();
+		List<Firestation> toTest = firestationRepository.getAllFirestations();
 
 		assertThat(toTest.size()).isEqualTo(3);
 		assertThat(toTest.get(0).getAddress()).isEqualTo("this is an address");
@@ -56,9 +56,9 @@ class FirestationRepositoryTest {
 
 	@Test
 	public void getAll_whenDatabaseEmpty_returnEmptyList() {
-		when(mockDataCollectionDAO.getAll()).thenReturn(new DataCollection());
+		when(mockFileIO.getDataCollection()).thenReturn(new DataCollection());
 
-		List<Firestation> toTest = firestationRepository.getAll();
+		List<Firestation> toTest = firestationRepository.getAllFirestations();
 
 		assertThat(toTest.size()).isEqualTo(0);
 	}

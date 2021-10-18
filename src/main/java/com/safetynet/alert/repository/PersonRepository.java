@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.safetynet.alert.DAO.DataCollectionJsonFileDAO;
+import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.exception.EntityAlreadyPresentException;
 import com.safetynet.alert.exception.EntityMissingException;
 import com.safetynet.alert.exception.FileAccessException;
@@ -22,21 +22,21 @@ public class PersonRepository {
 
 	private static Logger log = LogManager.getLogger("PersonRepository");
 
-	private DataCollectionJsonFileDAO dataCollectionDAO;
+	private JsonFileReaderWriter dataCollectionDAO;
 
 	@Autowired
-	public PersonRepository(DataCollectionJsonFileDAO dataCollectionDAO) {
+	public PersonRepository(JsonFileReaderWriter dataCollectionDAO) {
 		this.dataCollectionDAO = dataCollectionDAO;
 	}
 
-	public List<Person> getAll() {
-		DataCollection dataCollection = dataCollectionDAO.getAll();
+	public List<Person> getAllPersons() {
+		DataCollection dataCollection = dataCollectionDAO.getDataCollection();
 
 		return dataCollection.getPersons() != null ? dataCollection.getPersons() : new ArrayList<Person>();
 	}
 
 	public void add(Person person) throws FileAccessException, EntityAlreadyPresentException {
-		List<Person> persons = getAll();
+		List<Person> persons = getAllPersons();
 
 		if (findIndex(person, persons) != -1) {
 			log.error("Error trying to add already present person");
@@ -48,7 +48,7 @@ public class PersonRepository {
 	}
 
 	public void update(Person person) throws FileAccessException, EntityMissingException {
-		List<Person> persons = getAll();
+		List<Person> persons = getAllPersons();
 		int index = findIndex(person, persons);
 
 		if (index < 0) {
@@ -61,7 +61,7 @@ public class PersonRepository {
 	}
 
 	public void delete(Person person) throws FileAccessException, EntityMissingException {
-		List<Person> persons = getAll();
+		List<Person> persons = getAllPersons();
 		int index = findIndex(person, persons);
 
 		if (index < 0) {
@@ -74,7 +74,7 @@ public class PersonRepository {
 	}
 
 	public Person findByFirstNameAndLastName(String firstName, String lastName) {
-		List<Person> persons = getAll();
+		List<Person> persons = getAllPersons();
 
 		int index = findIndex(new Person(firstName, lastName, null, null, null, null, null), persons);
 		if (index >= 0) {
@@ -84,12 +84,12 @@ public class PersonRepository {
 	}
 
 	public List<Person> findByAddress(String address) {
-		List<Person> persons = getAll();
+		List<Person> persons = getAllPersons();
 		List<Person> ret = new ArrayList<Person>();
 
-		for (Person p : persons) {
-			if (p.getAddress().equals(address)) {
-				ret.add(p);
+		for (Person person : persons) {
+			if (person.getAddress().equals(address)) {
+				ret.add(person);
 			}
 		}
 
@@ -97,15 +97,27 @@ public class PersonRepository {
 	}
 
 	public List<Person> findByCity(String city) {
-		List<Person> persons = getAll();
+		List<Person> persons = getAllPersons();
 		List<Person> ret = new ArrayList<Person>();
 
-		for (Person p : persons) {
-			if (p.getCity().equals(city)) {
-				ret.add(p);
+		for (Person person : persons) {
+			if (person.getCity().equals(city)) {
+				ret.add(person);
 			}
 		}
 
+		return ret;
+	}
+
+	public List<Person> findByLastName(String lastName) {
+		List<Person> persons = getAllPersons();
+		List<Person> ret = new ArrayList<Person>();
+
+		for (Person person : persons) {
+			if (person.getLastName().equals(lastName)) {
+				ret.add(person);
+			}
+		}
 		return ret;
 	}
 
