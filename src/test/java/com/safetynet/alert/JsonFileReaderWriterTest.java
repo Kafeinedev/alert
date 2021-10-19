@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alert.DAO.JsonFileReaderWriter;
-import com.safetynet.alert.config.JsonDataConfig;
+import com.safetynet.alert.config.JsonFileConfig;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Person;
@@ -36,7 +36,7 @@ class JsonFileReaderWriterTest {
 	@Mock
 	private ObjectMapper mockObjectMapper;
 	@Mock
-	private JsonDataConfig mockDataConfig;
+	private JsonFileConfig mockDataConfig;
 
 	private JsonFileReaderWriter JsonFileIO;
 

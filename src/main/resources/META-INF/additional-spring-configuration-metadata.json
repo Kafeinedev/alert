@@ -1,5 +1,7 @@
-{"properties": [{
-  "name": "com.safetynet.alert.jsondataconfig.path",
-  "type": "java.lang.String",
-  "description": "A description for 'com.safetynet.alert.jsondataconfig.path'"
-}]}
+{"properties": [
+  {
+    "name": "com.safetynet.alert.jsonfileconfig.path",
+    "type": "java.lang.String",
+    "description": "Path to the json file used for data"
+  }
+]}

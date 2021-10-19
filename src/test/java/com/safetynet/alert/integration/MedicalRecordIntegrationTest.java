@@ -23,7 +23,7 @@ import com.safetynet.alert.controller.MedicalRecordController;
 import com.safetynet.alert.model.MedicalRecord;
 
 @SpringBootTest
-class MedicalRecordIT {
+class MedicalRecordIntegrationTest {
 
 	@Autowired
 	private MedicalRecordController controller;

@@ -23,7 +23,7 @@ import com.safetynet.alert.controller.FirestationController;
 import com.safetynet.alert.model.Firestation;
 
 @SpringBootTest
-class FirestationIT {
+class FirestationIntegrationTest {
 
 	@Autowired
 	private FirestationController controller;

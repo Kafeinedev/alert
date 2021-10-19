@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alert.config.JsonDataConfig;
+import com.safetynet.alert.config.JsonFileConfig;
 import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.DataCollection;
 import com.safetynet.alert.model.Firestation;
@@ -22,10 +22,10 @@ public class JsonFileReaderWriter {
 	private static Logger log = LogManager.getLogger("DataCollectionDAO logger");
 
 	private ObjectMapper objectMapper;
-	private JsonDataConfig config;
+	private JsonFileConfig config;
 
 	@Autowired
-	public JsonFileReaderWriter(ObjectMapper objectMapper, JsonDataConfig config) {
+	public JsonFileReaderWriter(ObjectMapper objectMapper, JsonFileConfig config) {
 		this.objectMapper = objectMapper;
 		this.config = config;
 	}

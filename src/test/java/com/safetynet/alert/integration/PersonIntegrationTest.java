@@ -23,7 +23,7 @@ import com.safetynet.alert.controller.PersonController;
 import com.safetynet.alert.model.Person;
 
 @SpringBootTest
-class PersonIT {
+class PersonIntegrationTest {
 
 	@Autowired
 	private PersonController controller;

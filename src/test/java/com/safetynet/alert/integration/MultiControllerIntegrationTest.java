@@ -26,7 +26,7 @@ import com.safetynet.alert.model.Person;
 
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
-class MultiControllerIT {
+class MultiControllerIntegrationTest {
 
 	@Autowired
 	private FirestationController firestationController;

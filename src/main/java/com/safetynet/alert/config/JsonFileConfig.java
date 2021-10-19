@@ -4,8 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "com.safetynet.alert.jsondataconfig")
-public class JsonDataConfig {
+@ConfigurationProperties(prefix = "com.safetynet.alert.jsonfileconfig")
+public class JsonFileConfig {
 
 	private String path;
 
