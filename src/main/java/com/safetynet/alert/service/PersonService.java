@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.model.Person;
 import com.safetynet.alert.repository.MedicalRecordRepository;
@@ -27,15 +30,15 @@ public class PersonService {
 	@Autowired
 	private ObjectMapper mapper;
 
-	public void postPerson(Person person) {
+	public void postPerson(Person person) throws FileAccessException, EntityAlreadyPresentException {
 		personRepository.add(person);
 	}
 
-	public void putPerson(Person person) {
+	public void putPerson(Person person) throws FileAccessException, EntityMissingException {
 		personRepository.update(person);
 	}
 
-	public void deletePerson(Person person) {
+	public void deletePerson(Person person) throws FileAccessException, EntityMissingException {
 		personRepository.delete(person);
 	}
 

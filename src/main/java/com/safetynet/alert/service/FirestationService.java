@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.Firestation;
 import com.safetynet.alert.model.MedicalRecord;
 import com.safetynet.alert.model.Person;
@@ -32,15 +35,16 @@ public class FirestationService {
 	@Autowired
 	private ObjectMapper mapper;
 
-	public void postFirestationMapping(Firestation firestation) {
+	public void postFirestationMapping(Firestation firestation)
+			throws FileAccessException, EntityAlreadyPresentException {
 		firestationRepository.add(firestation);
 	}
 
-	public void putFirestationMapping(Firestation firestation) {
+	public void putFirestationMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
 		firestationRepository.update(firestation);
 	}
 
-	public void deleteFirestationMapping(Firestation firestation) {
+	public void deleteFirestationMapping(Firestation firestation) throws FileAccessException, EntityMissingException {
 		if (firestation.getAddress() != null) {
 			firestationRepository.deleteAddressMapping(firestation);
 		} else if (firestation.getStation() != null) {

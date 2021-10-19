@@ -38,7 +38,7 @@ public class FirestationRepository {
 		List<Firestation> firestations = getAllFirestations();
 		int index = findIndexByAddress(firestation, firestations);
 
-		if (index != -1 && firestations.get(index).getStation().equals(firestation.getStation())) {
+		if (index != -1) {
 			log.error("Error trying to add a mapping already present");
 			throw new EntityAlreadyPresentException();
 		}

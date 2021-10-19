@@ -2,6 +2,8 @@ package com.safetynet.alert.controller;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,50 +17,125 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.safetynet.alert.exception.EntityAlreadyPresentException;
+import com.safetynet.alert.exception.EntityMissingException;
+import com.safetynet.alert.exception.FileAccessException;
 import com.safetynet.alert.model.Firestation;
 import com.safetynet.alert.service.FirestationService;
 
 @RestController
 public class FirestationController {
 
+	private static Logger log = LogManager.getLogger("Firestation Controller");
+
 	@Autowired
 	private FirestationService firestationService;
 
 	@PostMapping("/firestation")
 	public ResponseEntity<Firestation> postFirestationMapping(@RequestBody Firestation firestation) {
-		firestationService.postFirestationMapping(firestation);
-		return new ResponseEntity<>(firestation, HttpStatus.CREATED);
+		log.info("Processing post request at \"/firestation\" content =" + firestation.toString());
+		ResponseEntity<Firestation> response;
+
+		try {
+			firestationService.postFirestationMapping(firestation);
+			response = new ResponseEntity<>(firestation, HttpStatus.CREATED);
+			log.info("Post request at \"/firestation\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("Post request at \"/firestation\" failure " + response.toString());
+		} catch (EntityAlreadyPresentException e) {
+			response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			log.error("Post request at \"/firestation\" failure " + response.toString());
+		}
+
+		return response;
 	}
 
 	@PutMapping("/firestation")
 	public ResponseEntity<Firestation> putFirestationMapping(@RequestBody Firestation firestation) {
-		firestationService.putFirestationMapping(firestation);
-		return new ResponseEntity<>(firestation, HttpStatus.OK);
+		log.info("Processing put request at \"/firestation\" content =" + firestation.toString());
+		ResponseEntity<Firestation> response;
+
+		try {
+			firestationService.putFirestationMapping(firestation);
+			response = new ResponseEntity<>(firestation, HttpStatus.OK);
+			log.info("Put request at \"/firestation\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("Put request at \"/firestation\" failure " + response.toString());
+		} catch (EntityMissingException e) {
+			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			log.error("Put request at \"/firestation\" failure " + response.toString());
+		}
+
+		return response;
 	}
 
 	@DeleteMapping("/firestation")
 	public ResponseEntity<Firestation> deleteFirestationMapping(@RequestBody Firestation firestation) {
-		firestationService.deleteFirestationMapping(firestation);
-		return new ResponseEntity<>(firestation, HttpStatus.OK);
+		log.info("Processing delete request at \"/firestation\" content =" + firestation.toString());
+		ResponseEntity<Firestation> response;
+
+		try {
+			firestationService.deleteFirestationMapping(firestation);
+			response = new ResponseEntity<>(firestation, HttpStatus.OK);
+			log.info("Delete request at \"/firestation\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("Delete request at \"/firestation\" failure " + response.toString());
+		} catch (EntityMissingException e) {
+			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			log.error("Delete request at \"/firestation\" failure " + response.toString());
+		}
+
+		return response;
 	}
 
 	@GetMapping("/flood/stations")
 	public ResponseEntity<ArrayNode> floodStations(@RequestParam("stations") List<String> stations) {
-		return new ResponseEntity<>(firestationService.stations(stations), HttpStatus.OK);
+		log.info("Processing get request at \"/flood/stations\" stations=" + stations.toString());
+		ResponseEntity<ArrayNode> response;
+
+		ArrayNode content = firestationService.stations(stations);
+		response = new ResponseEntity<>(content, HttpStatus.OK);
+		log.info("get request at \"/flood/stations\" successfull " + response.toString());
+
+		return response;
 	}
 
 	@GetMapping("/phoneAlert")
 	public ResponseEntity<ArrayNode> phoneAlert(@RequestParam("firestation") String stationNumber) {
-		return new ResponseEntity<>(firestationService.phoneAlert(stationNumber), HttpStatus.OK);
+		log.info("Processing get request at \"/phoneAlert\" firestation=" + stationNumber);
+		ResponseEntity<ArrayNode> response;
+
+		ArrayNode content = firestationService.phoneAlert(stationNumber);
+		response = new ResponseEntity<>(content, HttpStatus.OK);
+		log.info("get request at \"/phoneAlert\" successfull " + response.toString());
+
+		return response;
 	}
 
 	@GetMapping("/firestation")
 	public ResponseEntity<ObjectNode> firestation(@RequestParam("stationNumber") String stationNumber) {
-		return new ResponseEntity<>(firestationService.firestation(stationNumber), HttpStatus.OK);
+		log.info("Processing get request at \"/firestation\" stationNumber=" + stationNumber);
+		ResponseEntity<ObjectNode> response;
+
+		ObjectNode content = firestationService.firestation(stationNumber);
+		response = new ResponseEntity<>(content, HttpStatus.OK);
+		log.info("get request at \"/firestation\" successfull " + response.toString());
+
+		return response;
 	}
 
 	@GetMapping("/fire")
 	public ResponseEntity<ObjectNode> fire(@RequestParam("address") String address) {
-		return new ResponseEntity<>(firestationService.fire(address), HttpStatus.OK);
+		log.info("Processing get request at \"/fire\" address=" + address);
+		ResponseEntity<ObjectNode> response;
+
+		ObjectNode content = firestationService.fire(address);
+		response = new ResponseEntity<>(content, HttpStatus.OK);
+		log.info("get request at \"/fire\" successfull " + response.toString());
+
+		return response;
 	}
 }
