@@ -52,7 +52,7 @@ public class FirestationService {
 		}
 	}
 
-	public ArrayNode stations(List<String> stationNumbers) {
+	public ArrayNode stations(List<String> stationNumbers) throws FileAccessException {
 		ArrayNode houses = mapper.createArrayNode();
 		for (String station : stationNumbers) {
 			houses.addAll(station(station));
@@ -60,7 +60,7 @@ public class FirestationService {
 		return houses;
 	}
 
-	private ArrayNode station(String stationNumber) {
+	private ArrayNode station(String stationNumber) throws FileAccessException {
 		ArrayNode houses = mapper.createArrayNode();
 
 		for (String address : firestationRepository.findByStation(stationNumber)) {
@@ -73,9 +73,7 @@ public class FirestationService {
 						person.getLastName());
 				ObjectNode inhabitant = mapper.createObjectNode();
 				PersonUtil.addNameToNode(inhabitant, person);
-				inhabitant.put("phone", person.getPhone());
-				inhabitant.put("age", MedicalRecordUtil.calculateAge(medicalRecord));
-				inhabitant.set("patientHistory", MedicalRecordUtil.patientHistory(medicalRecord));
+				PersonUtil.addPhoneAgePatientHistoryToNode(inhabitant, person, medicalRecord);
 
 				inhabitants.add(inhabitant);
 			}
@@ -85,7 +83,7 @@ public class FirestationService {
 		return houses;
 	}
 
-	public ArrayNode phoneAlert(String stationNumber) {
+	public ArrayNode phoneAlert(String stationNumber) throws FileAccessException {
 		ArrayNode phones = mapper.createArrayNode();
 
 		for (String address : firestationRepository.findByStation(stationNumber)) {
@@ -96,7 +94,7 @@ public class FirestationService {
 		return phones;
 	}
 
-	public ObjectNode firestation(String stationNumber) {
+	public ObjectNode firestation(String stationNumber) throws FileAccessException {
 		ArrayNode persons = mapper.createArrayNode();
 		long adultCount = 0;
 		long childrenCount = 0;
@@ -125,7 +123,7 @@ public class FirestationService {
 		return coveredPersons;
 	}
 
-	public ObjectNode fire(String address) {
+	public ObjectNode fire(String address) throws FileAccessException {
 		ObjectNode house = mapper.createObjectNode();
 		house.put("station", firestationRepository.findByAddress(address));
 		ArrayNode inhabitants = mapper.createArrayNode();
@@ -135,9 +133,7 @@ public class FirestationService {
 			MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 					person.getLastName());
 			PersonUtil.addNameToNode(inhabitant, person);
-			inhabitant.put("phone", person.getPhone());
-			inhabitant.put("age", MedicalRecordUtil.calculateAge(medicalRecord));
-			inhabitant.set("patientHistory", MedicalRecordUtil.patientHistory(medicalRecord));
+			PersonUtil.addPhoneAgePatientHistoryToNode(inhabitant, person, medicalRecord);
 
 			inhabitants.add(inhabitant);
 		}

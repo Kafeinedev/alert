@@ -72,7 +72,7 @@ public class MedicalRecordRepository {
 		dataCollectionDAO.updateMedicalRecord(medicalRecords);
 	}
 
-	public MedicalRecord findByFirstNameAndLastName(String firstName, String lastName) {
+	public MedicalRecord findByFirstNameAndLastName(String firstName, String lastName) throws FileAccessException {
 		List<MedicalRecord> medicalRecords = getAllMedicalRecords();
 		int index = findIndex(new MedicalRecord(firstName, lastName, null, null, null), medicalRecords);
 

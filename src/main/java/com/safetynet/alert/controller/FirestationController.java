@@ -96,9 +96,14 @@ public class FirestationController {
 		log.info("Processing get request at \"/flood/stations\" stations=" + stations.toString());
 		ResponseEntity<ArrayNode> response;
 
-		ArrayNode content = firestationService.stations(stations);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/flood/stations\" successfull " + response.toString());
+		try {
+			ArrayNode content = firestationService.stations(stations);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/flood/stations\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/flood/stations\" failure " + response.toString());
+		}
 
 		return response;
 	}
@@ -108,9 +113,14 @@ public class FirestationController {
 		log.info("Processing get request at \"/phoneAlert\" firestation=" + stationNumber);
 		ResponseEntity<ArrayNode> response;
 
-		ArrayNode content = firestationService.phoneAlert(stationNumber);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/phoneAlert\" successfull " + response.toString());
+		try {
+			ArrayNode content = firestationService.phoneAlert(stationNumber);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/phoneAlert\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/phoneAlert\" failure " + response.toString());
+		}
 
 		return response;
 	}
@@ -120,9 +130,14 @@ public class FirestationController {
 		log.info("Processing get request at \"/firestation\" stationNumber=" + stationNumber);
 		ResponseEntity<ObjectNode> response;
 
-		ObjectNode content = firestationService.firestation(stationNumber);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/firestation\" successfull " + response.toString());
+		try {
+			ObjectNode content = firestationService.firestation(stationNumber);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/firestation\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/firestation\" failure " + response.toString());
+		}
 
 		return response;
 	}
@@ -132,9 +147,14 @@ public class FirestationController {
 		log.info("Processing get request at \"/fire\" address=" + address);
 		ResponseEntity<ObjectNode> response;
 
-		ObjectNode content = firestationService.fire(address);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/fire\" successfull " + response.toString());
+		try {
+			ObjectNode content = firestationService.fire(address);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/fire\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/fire\" failure " + response.toString());
+		}
 
 		return response;
 	}

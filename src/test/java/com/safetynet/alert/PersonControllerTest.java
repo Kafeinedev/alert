@@ -138,6 +138,12 @@ class PersonControllerTest {
 	}
 
 	@Test
+	public void communityEmail_whenDataBaseAccessError_send5xx() throws Exception {
+		when(mockPersonService.communityEmail("la bégude")).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/communityEmail?city=la bégude")).andExpect(status().is5xxServerError());
+	}
+
+	@Test
 	public void personInfo_whenWorkingProperly_send200WithProperContent() throws Exception {
 		ArrayNode personInfo = mapper.createArrayNode();
 		personInfo.add("yes its correct");
@@ -147,12 +153,24 @@ class PersonControllerTest {
 	}
 
 	@Test
+	public void personInfo_whenDataBaseAccessError_send5xx() throws Exception {
+		when(mockPersonService.personInfo("NAAAAAAME")).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/personInfo?firstName=nawak&lastName=NAAAAAAME")).andExpect(status().is5xxServerError());
+	}
+
+	@Test
 	public void childAlert_whenWorkingProperly_send200WithProperContent() throws Exception {
 		ObjectNode childrensList = mapper.createObjectNode();
 		childrensList.put("pretend I'm a list", "Yes a list");
 		when(mockPersonService.childAlert("test")).thenReturn(childrensList);
 		mockMvc.perform(get("/childAlert?address=test")).andExpect(status().isOk())
 				.andExpect(content().string(childrensList.toString()));
+	}
+
+	@Test
+	public void childAlert_whenDataBaseAccessError_send5xx() throws Exception {
+		when(mockPersonService.childAlert("no dress")).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/childAlert?address=no dress")).andExpect(status().is5xxServerError());
 	}
 
 }

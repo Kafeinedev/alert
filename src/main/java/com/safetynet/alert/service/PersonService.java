@@ -42,7 +42,7 @@ public class PersonService {
 		personRepository.delete(person);
 	}
 
-	public ArrayNode communityEmail(String city) {
+	public ArrayNode communityEmail(String city) throws FileAccessException {
 		List<Person> persons = personRepository.findByCity(city);
 		ArrayNode emails = mapper.createArrayNode();
 
@@ -52,7 +52,7 @@ public class PersonService {
 		return emails;
 	}
 
-	public ArrayNode personInfo(String lastName) {
+	public ArrayNode personInfo(String lastName) throws FileAccessException {
 		ArrayNode personsInformation = mapper.createArrayNode();
 		List<Person> persons = personRepository.findByLastName(lastName);
 
@@ -72,7 +72,7 @@ public class PersonService {
 		return personsInformation;
 	}
 
-	public ObjectNode childAlert(String address) {
+	public ObjectNode childAlert(String address) throws FileAccessException {
 		ArrayNode adults = mapper.createArrayNode();
 		ArrayNode childrens = mapper.createArrayNode();
 

@@ -94,9 +94,14 @@ public class PersonController {
 		log.info("Processing get request at \"/communityEmail\" city=" + city);
 		ResponseEntity<ArrayNode> response;
 
-		ArrayNode content = personService.communityEmail(city);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/communityEmail\" successfull " + response.toString());
+		try {
+			ArrayNode content = personService.communityEmail(city);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/communityEmail\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/communityEmail\" failure " + response.toString());
+		}
 
 		return response;
 	}
@@ -107,9 +112,14 @@ public class PersonController {
 		log.info("Processing get request at \"/personInfo\" firstName=" + firstName + " lastName=" + lastName);
 		ResponseEntity<ArrayNode> response;
 
-		ArrayNode content = personService.personInfo(lastName);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/personInfo\" successfull " + response.toString());
+		try {
+			ArrayNode content = personService.personInfo(lastName);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/personInfo\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/communityEmail\" failure " + response.toString());
+		}
 
 		return response;
 	}
@@ -119,9 +129,14 @@ public class PersonController {
 		log.info("Processing get request at \"/childAlert\" address" + address);
 		ResponseEntity<ObjectNode> response;
 
-		ObjectNode content = personService.childAlert(address);
-		response = new ResponseEntity<>(content, HttpStatus.OK);
-		log.info("get request at \"/childAlert\" successfull " + response.toString());
+		try {
+			ObjectNode content = personService.childAlert(address);
+			response = new ResponseEntity<>(content, HttpStatus.OK);
+			log.info("get request at \"/childAlert\" successfull " + response.toString());
+		} catch (FileAccessException e) {
+			response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("get request at \"/communityEmail\" failure " + response.toString());
+		}
 
 		return response;
 	}

@@ -123,9 +123,9 @@ class FirestationRepositoryTest {
 	}
 
 	@Test
-	public void findByAddress_whenNoStationServingThatAddress_returnEmptyString() {
+	public void findByAddress_whenNoStationServingThatAddress_returnNull() {
 		String number = firestationRepository.findByAddress("nothing to see here move along");
 
-		assertThat(number).isEqualTo("");
+		assertThat(number).isNull();
 	}
 }

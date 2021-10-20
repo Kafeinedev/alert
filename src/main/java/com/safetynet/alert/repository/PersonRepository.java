@@ -73,7 +73,7 @@ public class PersonRepository {
 		dataCollectionDAO.updatePerson(persons);
 	}
 
-	public Person findByFirstNameAndLastName(String firstName, String lastName) {
+	public Person findByFirstNameAndLastName(String firstName, String lastName) throws FileAccessException {
 		List<Person> persons = getAllPersons();
 
 		int index = findIndex(new Person(firstName, lastName, null, null, null, null, null), persons);
@@ -83,42 +83,42 @@ public class PersonRepository {
 		return null;
 	}
 
-	public List<Person> findByAddress(String address) {
+	public List<Person> findByAddress(String address) throws FileAccessException {
 		List<Person> persons = getAllPersons();
-		List<Person> ret = new ArrayList<Person>();
+		List<Person> personsFound = new ArrayList<Person>();
 
 		for (Person person : persons) {
 			if (person.getAddress().equals(address)) {
-				ret.add(person);
+				personsFound.add(person);
 			}
 		}
 
-		return ret;
+		return personsFound;
 	}
 
-	public List<Person> findByCity(String city) {
+	public List<Person> findByCity(String city) throws FileAccessException {
 		List<Person> persons = getAllPersons();
-		List<Person> ret = new ArrayList<Person>();
+		List<Person> personsFound = new ArrayList<Person>();
 
 		for (Person person : persons) {
 			if (person.getCity().equals(city)) {
-				ret.add(person);
+				personsFound.add(person);
 			}
 		}
 
-		return ret;
+		return personsFound;
 	}
 
-	public List<Person> findByLastName(String lastName) {
+	public List<Person> findByLastName(String lastName) throws FileAccessException {
 		List<Person> persons = getAllPersons();
-		List<Person> ret = new ArrayList<Person>();
+		List<Person> personsFound = new ArrayList<Person>();
 
 		for (Person person : persons) {
 			if (person.getLastName().equals(lastName)) {
-				ret.add(person);
+				personsFound.add(person);
 			}
 		}
-		return ret;
+		return personsFound;
 	}
 
 	private int findIndex(Person person, List<Person> persons) {

@@ -93,24 +93,24 @@ public class FirestationRepository {
 		dataCollectionDAO.updateFirestation(firestations);
 	}
 
-	public List<String> findByStation(String station) {
-		List<String> ret = new ArrayList<String>();
+	public List<String> findByStation(String station) throws FileAccessException {
+		List<String> addresses = new ArrayList<String>();
 		List<Firestation> firestations = getAllFirestations();
 
 		for (Firestation f : firestations) {
 			if (f.getStation().equals(station)) {
-				ret.add(f.getAddress());
+				addresses.add(f.getAddress());
 			}
 		}
 
-		return ret;
+		return addresses;
 	}
 
-	public String findByAddress(String address) {
+	public String findByAddress(String address) throws FileAccessException {
 		List<Firestation> firestations = getAllFirestations();
 		int index = findIndexByAddress(new Firestation(address, null), firestations);
 
-		return index >= 0 ? firestations.get(index).getStation() : "";
+		return index >= 0 ? firestations.get(index).getStation() : null;
 	}
 
 	private int findIndexByAddress(Firestation firestation, List<Firestation> firestations) {

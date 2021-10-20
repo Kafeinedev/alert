@@ -37,7 +37,7 @@ class FirestationControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private FirestationService firestationService;
+	private FirestationService mockFirestationService;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -52,7 +52,7 @@ class FirestationControllerTest {
 	@Test
 	public void postFirestationMapping_whenMappingAlreadyExist_send4xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new EntityAlreadyPresentException()).when(firestationService)
+		doThrow(new EntityAlreadyPresentException()).when(mockFirestationService)
 				.postFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(post("/firestation").content(mapper.writeValueAsString(firestation))
@@ -62,7 +62,7 @@ class FirestationControllerTest {
 	@Test
 	public void postFirestationMapping_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new FileAccessException()).when(firestationService).postFirestationMapping(any(Firestation.class));
+		doThrow(new FileAccessException()).when(mockFirestationService).postFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(post("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
@@ -79,7 +79,8 @@ class FirestationControllerTest {
 	@Test
 	public void putFirestationMapping_whenMappingDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new EntityMissingException()).when(firestationService).putFirestationMapping(any(Firestation.class));
+		doThrow(new EntityMissingException()).when(mockFirestationService)
+				.putFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(put("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError());
@@ -88,7 +89,7 @@ class FirestationControllerTest {
 	@Test
 	public void putFirestationMapping_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new FileAccessException()).when(firestationService).putFirestationMapping(any(Firestation.class));
+		doThrow(new FileAccessException()).when(mockFirestationService).putFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(put("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
@@ -105,7 +106,8 @@ class FirestationControllerTest {
 	@Test
 	public void deleteFirestationMapping_whenMappingDoesntExist_send4xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new EntityMissingException()).when(firestationService).deleteFirestationMapping(any(Firestation.class));
+		doThrow(new EntityMissingException()).when(mockFirestationService)
+				.deleteFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError());
@@ -114,7 +116,8 @@ class FirestationControllerTest {
 	@Test
 	public void deleteFirestationMapping_whenDataBaseAccessError_send5xx() throws JsonProcessingException, Exception {
 		Firestation firestation = new Firestation("address", "1");
-		doThrow(new FileAccessException()).when(firestationService).deleteFirestationMapping(any(Firestation.class));
+		doThrow(new FileAccessException()).when(mockFirestationService)
+				.deleteFirestationMapping(any(Firestation.class));
 
 		mockMvc.perform(delete("/firestation").content(mapper.writeValueAsString(firestation))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().is5xxServerError());
@@ -124,35 +127,59 @@ class FirestationControllerTest {
 	public void floodStations_whenWorkingCorrectly_send200WithProperContent() throws Exception {
 		ArrayNode testDummy = mapper.createArrayNode();
 		testDummy.add("yes its correct");
-		when(firestationService.stations(List.of("test", "unique"))).thenReturn(testDummy);
+		when(mockFirestationService.stations(List.of("test", "unique"))).thenReturn(testDummy);
 		mockMvc.perform(get("/flood/stations?stations=test,unique")).andExpect(status().isOk())
 				.andExpect(content().string(testDummy.toString()));
+	}
+
+	@Test
+	public void floodStations_whenDatabaseAccessError_send5xx() throws Exception {
+		when(mockFirestationService.stations(List.of("nawak"))).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/flood/stations?stations=nawak")).andExpect(status().is5xxServerError());
 	}
 
 	@Test
 	public void phoneAlert_whenWorkingCorrectly_send200WithProperContent() throws Exception {
 		ArrayNode phones = mapper.createArrayNode();
 		phones.add("none of this text matter");
-		when(firestationService.phoneAlert("1337")).thenReturn(phones);
+		when(mockFirestationService.phoneAlert("1337")).thenReturn(phones);
 		mockMvc.perform(get("/phoneAlert?firestation=1337")).andExpect(status().isOk())
 				.andExpect(content().string(phones.toString()));
+	}
+
+	@Test
+	public void phoneAlert_whenDatabaseAccessError_send5xx() throws Exception {
+		when(mockFirestationService.phoneAlert("number")).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/phoneAlert?firestation=number")).andExpect(status().is5xxServerError());
 	}
 
 	@Test
 	public void firestation_whenWorkingProperly_send200WithProperContent() throws Exception {
 		ObjectNode personsList = mapper.createObjectNode();
 		personsList.put("bip boop Im a top tier list", "pouet");
-		when(firestationService.firestation("number")).thenReturn(personsList);
+		when(mockFirestationService.firestation("number")).thenReturn(personsList);
 		mockMvc.perform(get("/firestation?stationNumber=number")).andExpect(status().isOk())
 				.andExpect(content().string(personsList.toString()));
+	}
+
+	@Test
+	public void firestation_whenDatabaseAccessError_send5xx() throws Exception {
+		when(mockFirestationService.firestation("1337")).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/firestation?stationNumber=1337")).andExpect(status().is5xxServerError());
 	}
 
 	@Test
 	public void fire_whenWorkingProperly_send200WithProperContent() throws Exception {
 		ObjectNode house = mapper.createObjectNode();
 		house.put("this is a test", "what's inside doesnt matter");
-		when(firestationService.fire("a dress")).thenReturn(house);
+		when(mockFirestationService.fire("a dress")).thenReturn(house);
 		mockMvc.perform(get("/fire?address=a dress")).andExpect(status().isOk())
 				.andExpect(content().string(house.toString()));
+	}
+
+	@Test
+	public void fire_whenDatabaseAccessError_send5xx() throws Exception {
+		when(mockFirestationService.fire("no dress")).thenThrow(new FileAccessException());
+		mockMvc.perform(get("/fire?address=no dress")).andExpect(status().is5xxServerError());
 	}
 }
