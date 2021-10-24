@@ -11,14 +11,14 @@ import com.safetynet.alert.model.MedicalRecord;
 
 public class MedicalRecordUtil {
 
-	public static long calculateAge(MedicalRecord medicalRecord) {
+	public long calculateAge(MedicalRecord medicalRecord) {
 		LocalDate current = LocalDate.now();
 		LocalDate birthdate = LocalDate.parse(medicalRecord.getBirthdate(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
 
 		return ChronoUnit.YEARS.between(birthdate, current);
 	}
 
-	public static ObjectNode patientHistory(MedicalRecord medicalRecord) {
+	public ObjectNode patientHistory(MedicalRecord medicalRecord) {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode patientHistory = mapper.createObjectNode();
 		ArrayNode medications = mapper.createArrayNode();

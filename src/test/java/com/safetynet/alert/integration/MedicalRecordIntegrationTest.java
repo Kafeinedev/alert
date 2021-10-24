@@ -22,7 +22,7 @@ import com.safetynet.alert.DAO.JsonFileReaderWriter;
 import com.safetynet.alert.controller.MedicalRecordController;
 import com.safetynet.alert.model.MedicalRecord;
 
-@SpringBootTest
+@SpringBootTest(properties = "com.safetynet.alert.jsonfileconfig.path=resources/test.json")
 class MedicalRecordIntegrationTest {
 
 	@Autowired

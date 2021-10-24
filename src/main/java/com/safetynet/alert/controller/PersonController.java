@@ -90,12 +90,12 @@ public class PersonController {
 	}
 
 	@GetMapping("/communityEmail")
-	public ResponseEntity<ArrayNode> communityEmail(@RequestParam("city") String city) {
+	public ResponseEntity<ArrayNode> getCommunityEmail(@RequestParam("city") String city) {
 		log.info("Processing get request at \"/communityEmail\" city=" + city);
 		ResponseEntity<ArrayNode> response;
 
 		try {
-			ArrayNode content = personService.communityEmail(city);
+			ArrayNode content = personService.getCommunityEmail(city);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/communityEmail\" successfull " + response.toString());
 		} catch (FileAccessException e) {
@@ -107,13 +107,13 @@ public class PersonController {
 	}
 
 	@GetMapping("/personInfo")
-	public ResponseEntity<ArrayNode> personInfo(@RequestParam("firstName") String firstName,
+	public ResponseEntity<ArrayNode> getPersonInfo(@RequestParam("firstName") String firstName,
 			@RequestParam("lastName") String lastName) {
 		log.info("Processing get request at \"/personInfo\" firstName=" + firstName + " lastName=" + lastName);
 		ResponseEntity<ArrayNode> response;
 
 		try {
-			ArrayNode content = personService.personInfo(lastName);
+			ArrayNode content = personService.getPersonInfo(firstName, lastName);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/personInfo\" successfull " + response.toString());
 		} catch (FileAccessException e) {
@@ -125,12 +125,12 @@ public class PersonController {
 	}
 
 	@GetMapping("/childAlert")
-	public ResponseEntity<ObjectNode> childAlert(@RequestParam("address") String address) {
+	public ResponseEntity<ObjectNode> getChildAlert(@RequestParam("address") String address) {
 		log.info("Processing get request at \"/childAlert\" address" + address);
 		ResponseEntity<ObjectNode> response;
 
 		try {
-			ObjectNode content = personService.childAlert(address);
+			ObjectNode content = personService.getChildAlert(address);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/childAlert\" successfull " + response.toString());
 		} catch (FileAccessException e) {

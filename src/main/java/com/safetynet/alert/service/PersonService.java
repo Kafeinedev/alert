@@ -42,7 +42,7 @@ public class PersonService {
 		personRepository.delete(person);
 	}
 
-	public ArrayNode communityEmail(String city) throws FileAccessException {
+	public ArrayNode getCommunityEmail(String city) throws FileAccessException {
 		List<Person> persons = personRepository.findByCity(city);
 		ArrayNode emails = mapper.createArrayNode();
 
@@ -52,7 +52,7 @@ public class PersonService {
 		return emails;
 	}
 
-	public ArrayNode personInfo(String lastName) throws FileAccessException {
+	public ArrayNode getPersonInfo(String firstName, String lastName) throws FileAccessException {
 		ArrayNode personsInformation = mapper.createArrayNode();
 		List<Person> persons = personRepository.findByLastName(lastName);
 
@@ -60,28 +60,37 @@ public class PersonService {
 			MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 					person.getLastName());
 			ObjectNode personInfo = mapper.createObjectNode();
-			PersonUtil.addNameToNode(personInfo, person);
+			PersonUtil personUtil = new PersonUtil();
+			MedicalRecordUtil medicalRecordUtil = new MedicalRecordUtil();
+			personUtil.addNameToNode(personInfo, person);
 			personInfo.put("address", person.getAddress());
-			personInfo.put("age", MedicalRecordUtil.calculateAge(medicalRecord));
+			personInfo.put("age", medicalRecordUtil.calculateAge(medicalRecord));
 			personInfo.put("email", person.getEmail());
-			personInfo.set("patientHistory", MedicalRecordUtil.patientHistory(medicalRecord));
+			personInfo.set("patientHistory", medicalRecordUtil.patientHistory(medicalRecord));
 
-			personsInformation.add(personInfo);
+			if (person.getFirstName().equals(firstName)) {
+				personsInformation.insert(-1, personInfo);// Javadoc comment error insert(0,) do NOT insert the data in
+															// front -1 work as advertised
+			} else {
+				personsInformation.add(personInfo);
+			}
 		}
 
 		return personsInformation;
 	}
 
-	public ObjectNode childAlert(String address) throws FileAccessException {
+	public ObjectNode getChildAlert(String address) throws FileAccessException {
 		ArrayNode adults = mapper.createArrayNode();
 		ArrayNode childrens = mapper.createArrayNode();
 
 		for (Person person : personRepository.findByAddress(address)) {
 			MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 					person.getLastName());
-			long age = MedicalRecordUtil.calculateAge(medicalRecord);
+			MedicalRecordUtil medicalRecordUtil = new MedicalRecordUtil();
+			PersonUtil personUtil = new PersonUtil();
+			long age = medicalRecordUtil.calculateAge(medicalRecord);
 			ObjectNode inhabitant = mapper.createObjectNode();
-			PersonUtil.addNameToNode(inhabitant, person);
+			personUtil.addNameToNode(inhabitant, person);
 
 			if (age <= 18) {
 				inhabitant.put("age", age);

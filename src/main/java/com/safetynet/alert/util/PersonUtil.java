@@ -6,14 +6,15 @@ import com.safetynet.alert.model.Person;
 
 public class PersonUtil {
 
-	public static void addNameToNode(ObjectNode node, Person person) {
+	public void addNameToNode(ObjectNode node, Person person) {
 		node.put("firstName", person.getFirstName());
 		node.put("lastName", person.getLastName());
 	}
 
-	public static void addPhoneAgePatientHistoryToNode(ObjectNode node, Person person, MedicalRecord medicalRecord) {
+	public void addPhoneAgePatientHistoryToNode(ObjectNode node, Person person, MedicalRecord medicalRecord) {
+		MedicalRecordUtil medicalRecordUtil = new MedicalRecordUtil();
 		node.put("phone", person.getPhone());
-		node.put("age", MedicalRecordUtil.calculateAge(medicalRecord));
-		node.set("patientHistory", MedicalRecordUtil.patientHistory(medicalRecord));
+		node.put("age", medicalRecordUtil.calculateAge(medicalRecord));
+		node.set("patientHistory", medicalRecordUtil.patientHistory(medicalRecord));
 	}
 }

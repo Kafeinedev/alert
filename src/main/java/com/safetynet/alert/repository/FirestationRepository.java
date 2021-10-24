@@ -88,6 +88,7 @@ public class FirestationRepository {
 		}
 
 		if (missing) {
+			log.error("Error trying to delete a non existent address mapping");
 			throw new EntityMissingException();
 		}
 		dataCollectionDAO.updateFirestation(firestations);

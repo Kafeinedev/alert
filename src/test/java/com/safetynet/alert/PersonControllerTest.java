@@ -128,48 +128,48 @@ class PersonControllerTest {
 	}
 
 	@Test
-	public void communityEmail_whenWorkingCorrectly_send200WithProperContent() throws Exception {
+	public void getCommunityEmail_whenWorkingCorrectly_send200WithProperContent() throws Exception {
 		ArrayNode emails = mapper.createArrayNode();
 		emails.add("blabla");
 		emails.add("car");
-		when(mockPersonService.communityEmail("test")).thenReturn(emails);
+		when(mockPersonService.getCommunityEmail("test")).thenReturn(emails);
 		mockMvc.perform(get("/communityEmail?city=test")).andExpect(status().isOk())
 				.andExpect(content().string(emails.toString()));
 	}
 
 	@Test
-	public void communityEmail_whenDataBaseAccessError_send5xx() throws Exception {
-		when(mockPersonService.communityEmail("la bégude")).thenThrow(new FileAccessException());
+	public void getCommunityEmail_whenDataBaseAccessError_send5xx() throws Exception {
+		when(mockPersonService.getCommunityEmail("la bégude")).thenThrow(new FileAccessException());
 		mockMvc.perform(get("/communityEmail?city=la bégude")).andExpect(status().is5xxServerError());
 	}
 
 	@Test
-	public void personInfo_whenWorkingProperly_send200WithProperContent() throws Exception {
+	public void getPersonInfo_whenWorkingProperly_send200WithProperContent() throws Exception {
 		ArrayNode personInfo = mapper.createArrayNode();
 		personInfo.add("yes its correct");
-		when(mockPersonService.personInfo("test")).thenReturn(personInfo);
+		when(mockPersonService.getPersonInfo("nawak", "test")).thenReturn(personInfo);
 		mockMvc.perform(get("/personInfo?firstName=nawak&lastName=test")).andExpect(status().isOk())
 				.andExpect(content().string(personInfo.toString()));
 	}
 
 	@Test
-	public void personInfo_whenDataBaseAccessError_send5xx() throws Exception {
-		when(mockPersonService.personInfo("NAAAAAAME")).thenThrow(new FileAccessException());
+	public void getPersonInfo_whenDataBaseAccessError_send5xx() throws Exception {
+		when(mockPersonService.getPersonInfo("nawak", "NAAAAAAME")).thenThrow(new FileAccessException());
 		mockMvc.perform(get("/personInfo?firstName=nawak&lastName=NAAAAAAME")).andExpect(status().is5xxServerError());
 	}
 
 	@Test
-	public void childAlert_whenWorkingProperly_send200WithProperContent() throws Exception {
+	public void getChildAlert_whenWorkingProperly_send200WithProperContent() throws Exception {
 		ObjectNode childrensList = mapper.createObjectNode();
 		childrensList.put("pretend I'm a list", "Yes a list");
-		when(mockPersonService.childAlert("test")).thenReturn(childrensList);
+		when(mockPersonService.getChildAlert("test")).thenReturn(childrensList);
 		mockMvc.perform(get("/childAlert?address=test")).andExpect(status().isOk())
 				.andExpect(content().string(childrensList.toString()));
 	}
 
 	@Test
-	public void childAlert_whenDataBaseAccessError_send5xx() throws Exception {
-		when(mockPersonService.childAlert("no dress")).thenThrow(new FileAccessException());
+	public void getChildAlert_whenDataBaseAccessError_send5xx() throws Exception {
+		when(mockPersonService.getChildAlert("no dress")).thenThrow(new FileAccessException());
 		mockMvc.perform(get("/childAlert?address=no dress")).andExpect(status().is5xxServerError());
 	}
 

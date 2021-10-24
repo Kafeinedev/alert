@@ -52,15 +52,15 @@ public class FirestationService {
 		}
 	}
 
-	public ArrayNode stations(List<String> stationNumbers) throws FileAccessException {
+	public ArrayNode getFloodStations(List<String> stationNumbers) throws FileAccessException {
 		ArrayNode houses = mapper.createArrayNode();
 		for (String station : stationNumbers) {
-			houses.addAll(station(station));
+			houses.addAll(getFloodSingleStation(station));
 		}
 		return houses;
 	}
 
-	private ArrayNode station(String stationNumber) throws FileAccessException {
+	private ArrayNode getFloodSingleStation(String stationNumber) throws FileAccessException {
 		ArrayNode houses = mapper.createArrayNode();
 
 		for (String address : firestationRepository.findByStation(stationNumber)) {
@@ -71,9 +71,10 @@ public class FirestationService {
 			for (Person person : personRepository.findByAddress(address)) {
 				MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 						person.getLastName());
+				PersonUtil personUtil = new PersonUtil();
 				ObjectNode inhabitant = mapper.createObjectNode();
-				PersonUtil.addNameToNode(inhabitant, person);
-				PersonUtil.addPhoneAgePatientHistoryToNode(inhabitant, person, medicalRecord);
+				personUtil.addNameToNode(inhabitant, person);
+				personUtil.addPhoneAgePatientHistoryToNode(inhabitant, person, medicalRecord);
 
 				inhabitants.add(inhabitant);
 			}
@@ -83,7 +84,7 @@ public class FirestationService {
 		return houses;
 	}
 
-	public ArrayNode phoneAlert(String stationNumber) throws FileAccessException {
+	public ArrayNode getPhoneAlert(String stationNumber) throws FileAccessException {
 		ArrayNode phones = mapper.createArrayNode();
 
 		for (String address : firestationRepository.findByStation(stationNumber)) {
@@ -94,7 +95,7 @@ public class FirestationService {
 		return phones;
 	}
 
-	public ObjectNode firestation(String stationNumber) throws FileAccessException {
+	public ObjectNode getFirestation(String stationNumber) throws FileAccessException {
 		ArrayNode persons = mapper.createArrayNode();
 		long adultCount = 0;
 		long childrenCount = 0;
@@ -102,14 +103,16 @@ public class FirestationService {
 		for (String address : firestationRepository.findByStation(stationNumber)) {
 			for (Person person : personRepository.findByAddress(address)) {
 				ObjectNode inhabitant = mapper.createObjectNode();
-				PersonUtil.addNameToNode(inhabitant, person);
+				PersonUtil personUtil = new PersonUtil();
+				MedicalRecordUtil medicalRecordUtil = new MedicalRecordUtil();
+				personUtil.addNameToNode(inhabitant, person);
 				inhabitant.put("address", address);
 				inhabitant.put("phone", person.getPhone());
 
 				persons.add(inhabitant);
 				MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 						person.getLastName());
-				if (MedicalRecordUtil.calculateAge(medicalRecord) <= 18) {
+				if (medicalRecordUtil.calculateAge(medicalRecord) <= 18) {
 					++childrenCount;
 				} else {
 					++adultCount;
@@ -123,7 +126,7 @@ public class FirestationService {
 		return coveredPersons;
 	}
 
-	public ObjectNode fire(String address) throws FileAccessException {
+	public ObjectNode getFire(String address) throws FileAccessException {
 		ObjectNode house = mapper.createObjectNode();
 		house.put("station", firestationRepository.findByAddress(address));
 		ArrayNode inhabitants = mapper.createArrayNode();
@@ -132,8 +135,9 @@ public class FirestationService {
 			ObjectNode inhabitant = mapper.createObjectNode();
 			MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(),
 					person.getLastName());
-			PersonUtil.addNameToNode(inhabitant, person);
-			PersonUtil.addPhoneAgePatientHistoryToNode(inhabitant, person, medicalRecord);
+			PersonUtil personUtil = new PersonUtil();
+			personUtil.addNameToNode(inhabitant, person);
+			personUtil.addPhoneAgePatientHistoryToNode(inhabitant, person, medicalRecord);
 
 			inhabitants.add(inhabitant);
 		}

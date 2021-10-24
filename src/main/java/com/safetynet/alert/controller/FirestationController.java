@@ -92,12 +92,12 @@ public class FirestationController {
 	}
 
 	@GetMapping("/flood/stations")
-	public ResponseEntity<ArrayNode> floodStations(@RequestParam("stations") List<String> stations) {
+	public ResponseEntity<ArrayNode> getFloodStations(@RequestParam("stations") List<String> stations) {
 		log.info("Processing get request at \"/flood/stations\" stations=" + stations.toString());
 		ResponseEntity<ArrayNode> response;
 
 		try {
-			ArrayNode content = firestationService.stations(stations);
+			ArrayNode content = firestationService.getFloodStations(stations);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/flood/stations\" successfull " + response.toString());
 		} catch (FileAccessException e) {
@@ -109,12 +109,12 @@ public class FirestationController {
 	}
 
 	@GetMapping("/phoneAlert")
-	public ResponseEntity<ArrayNode> phoneAlert(@RequestParam("firestation") String stationNumber) {
+	public ResponseEntity<ArrayNode> getPhoneAlert(@RequestParam("firestation") String stationNumber) {
 		log.info("Processing get request at \"/phoneAlert\" firestation=" + stationNumber);
 		ResponseEntity<ArrayNode> response;
 
 		try {
-			ArrayNode content = firestationService.phoneAlert(stationNumber);
+			ArrayNode content = firestationService.getPhoneAlert(stationNumber);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/phoneAlert\" successfull " + response.toString());
 		} catch (FileAccessException e) {
@@ -126,12 +126,12 @@ public class FirestationController {
 	}
 
 	@GetMapping("/firestation")
-	public ResponseEntity<ObjectNode> firestation(@RequestParam("stationNumber") String stationNumber) {
+	public ResponseEntity<ObjectNode> getFirestation(@RequestParam("stationNumber") String stationNumber) {
 		log.info("Processing get request at \"/firestation\" stationNumber=" + stationNumber);
 		ResponseEntity<ObjectNode> response;
 
 		try {
-			ObjectNode content = firestationService.firestation(stationNumber);
+			ObjectNode content = firestationService.getFirestation(stationNumber);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/firestation\" successfull " + response.toString());
 		} catch (FileAccessException e) {
@@ -143,12 +143,12 @@ public class FirestationController {
 	}
 
 	@GetMapping("/fire")
-	public ResponseEntity<ObjectNode> fire(@RequestParam("address") String address) {
+	public ResponseEntity<ObjectNode> getFire(@RequestParam("address") String address) {
 		log.info("Processing get request at \"/fire\" address=" + address);
 		ResponseEntity<ObjectNode> response;
 
 		try {
-			ObjectNode content = firestationService.fire(address);
+			ObjectNode content = firestationService.getFire(address);
 			response = new ResponseEntity<>(content, HttpStatus.OK);
 			log.info("get request at \"/fire\" successfull " + response.toString());
 		} catch (FileAccessException e) {
