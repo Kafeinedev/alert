@@ -25,13 +25,13 @@ The data need to be contained in the body of the request in the form of a json s
 
 The following url are used to receive data with a GET request, argument must be provided in the url:
 
-/firestation?stationNumber=<station_number>\
-/childAlert?address=<address>\
-/phoneAlert?firestation=<firestation_number>\
-/fire?address=<address>\
-/flood/stations?stations=<list_of_station_numbers>\
-/personInfo?firstName=<firstName>&lastName=<lastName>\
-/communityEmail?city=<city>
+/firestation?stationNumber="station_number"\
+/childAlert?address="address"\
+/phoneAlert?firestation="firestation_number"\
+/fire?address="address"\
+/flood/stations?stations="list_of_station_numbers"\
+/personInfo?firstName="firstName"&lastName="lastName"\
+/communityEmail?city="city"
 
 ## Credits
 
